@@ -1,11 +1,7 @@
-
-
 // const mongoose = require('mongoose');
-
 
 // async function main() {
 //     await mongoose.connect('mongodb://127.0.0.1:27017/test');
-  
 
 //   }
 
@@ -13,12 +9,9 @@
 //     console.log(`Example app listening on port ${port}`)
 //   })
 
-
-
-
-import mongoose from 'mongoose';
-import config from './app/config';
-import app from './app';
+import mongoose from "mongoose";
+import config from "./app/config";
+import app from "./app";
 
 async function main() {
   try {
