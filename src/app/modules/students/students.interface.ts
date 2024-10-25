@@ -1,36 +1,38 @@
-export type Gurdian = {
+export type Guardian = {
   fatherName: string;
   fatherOccupation: string;
-  fatherContactNo: string;
+  fatherContactNumber: string;
   motherName: string;
   motherOccupation: string;
-  motherContactNo: string;
+  motherContactNumber: string;
 };
 
-export type userName = {
+export type UserName = {
   firstName: string;
-  middleName: string;
+  middleName?: string | undefined;
   lastName: string;
 };
-export type LoacalGurdian = {
+
+export type LocalGuardian = {
   name: string;
   occupation: string;
-  contactNo: string;
+  contactNumber: string;
   address: string;
 };
 
-export type IStudents = {
+export type IStudent = {
   id: string;
-  name: userName;
-  gender: "male" | "female"|"other";
-  dateOfBirth: string;
+  name: UserName;
   email: string;
-  contactNo: string;
-  emergencyContactNo: string;
+  gender: "male" | "female" | "other";
+  dateOfBirth?: string | undefined;
+  contactNumber: string;
+  emergencyContactNumber: string;
+  bloodGroup?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-" | undefined;
   presentAddress: string;
-  bloodGroup?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
-  gurdian: Gurdian;
-  loacalGurdian: LoacalGurdian;
-  profileImg?: string;
+  permanentAddress: string;
+  guardians: Guardian;
+  localGuardians: LocalGuardian;
+  profilePicture?: string | undefined;
   isActive: "active" | "blocked";
 };

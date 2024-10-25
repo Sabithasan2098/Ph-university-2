@@ -1,138 +1,140 @@
 import { Schema, model } from "mongoose";
 import {
-  Gurdian,
-  IStudents,
-  LoacalGurdian,
-  userName,
+  Guardian,
+  IStudent, 
+  LocalGuardian,
+  UserName,
 } from "./students.interface";
 
-const userNameSchema = new Schema<userName>({
+const userNameSchema = new Schema<UserName>({
   firstName: {
     type: String,
-    required: [true, "first name is required"],
+    required: [true, "First name is required"],
     trim: true,
   },
   middleName: { type: String, trim: true },
   lastName: {
     type: String,
-    required: [true, "last name is required"],
+    required: [true, "Last name is required"],
     trim: true,
   },
 });
 
-const gurdianSchema = new Schema<Gurdian>({
+const guardianSchema = new Schema<Guardian>({
   fatherName: {
     type: String,
-    required: [true, "father name is required"],
+    required: [true, "Father name is required"],
     trim: true,
   },
   fatherOccupation: {
     type: String,
-    required: [true, "father occupation is required"],
+    required: [true, "Father occupation is required"],
     trim: true,
   },
-  fatherContactNo: {
+  fatherContactNumber: {
     type: String,
-    required: [true, "father contact no is required"],
+    required: [true, "Father contact number is required"],
     trim: true,
   },
   motherName: {
     type: String,
-    required: [true, "mother name is required"],
+    required: [true, "Mother name is required"],
     trim: true,
   },
   motherOccupation: {
     type: String,
-    required: [true, "mother occupation is required"],
+    required: [true, "Mother occupation is required"],
     trim: true,
   },
-  motherContactNo: {
+  motherContactNumber: {
     type: String,
-    required: [true, "mother contact no is required"],
+    required: [true, "Mother contact number is required"],
     trim: true,
   },
 });
 
-const LoacalGurdianSchema = new Schema<LoacalGurdian>({
+const localGuardianSchema = new Schema<LocalGuardian>({
   name: {
     type: String,
-    required: [true, "local gurdian name is required"],
+    required: [true, "Local guardian name is required"],
     trim: true,
   },
   occupation: {
     type: String,
-    required: [true, "local gurdian ocupation is required"],
+    required: [true, "Local guardian occupation is required"],
     trim: true,
   },
-  contactNo: {
+  contactNumber: {
     type: String,
-    required: [true, "local gurdian contact no is required"],
+    required: [true, "Local guardian contact number is required"],
     trim: true,
   },
   address: {
     type: String,
-    required: [true, "local gurdian address is required"],
+    required: [true, "Local guardian address is required"],
     trim: true,
   },
 });
 
-const studentsSchema = new Schema<IStudents>({
+// Update the studentSchema to reflect the IStudents structure
+const studentSchema = new Schema<IStudent>({
   id: { type: String, required: true, unique: true, trim: true },
-  name: {
-    type: userNameSchema,
-    required: [true, "name field is required"],
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ["male", "female", "other"],
-      message: "{VALUE} is not correct",
+    name: {
+      type: userNameSchema,
+      required: [true, "Name field is required"],
     },
-    required: true,
-    trim: true,
-  },
-  dateOfBirth: { type: String, trim: true },
-  email: {
-    type: String,
-    required: [true, "email is required"],
-    unique: true,
-    trim: true,
-  },
-  contactNo: {
-    type: String,
-    required: [true, "contact no is required"],
-    trim: true,
-  },
-  emergencyContactNo: {
-    type: String,
-    required: [true, "emergency contact no is required"],
-    trim: true,
-  },
-  presentAddress: {
-    type: String,
-    required: [true, "present address is required"],
-    trim: true,
-  },
-  bloodGroup: {
-    type: String,
-    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-    trim: true,
-  },
-  gurdian: {
-    type: gurdianSchema,
-    required: [true, "gurdian field is required"],
-  },
-  loacalGurdian: {
-    type: LoacalGurdianSchema,
-    required: [true, "local gurdian field is required"],
-  },
-  profileImg: { type: String, trim: true },
-  isActive: {
-    type: String,
-    enum: ["active", "blocked"],
-    default: "active",
-    trim: true,
-  },
+    gender: {
+      type: String,
+      enum: {
+        values: ["male", "female", "other"],
+        message: "{VALUE} is not correct",
+      },
+      required: true,
+      trim: true,
+    },
+    dateOfBirth: { type: String, trim: true },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      trim: true,
+    },
+    contactNumber: {
+      type: String,
+      required: [true, "Contact number is required"],
+      trim: true,
+    },
+    emergencyContactNumber: {
+      type: String,
+      required: [true, "Emergency contact number is required"],
+      trim: true,
+    },
+    presentAddress: {
+      type: String,
+      required: [true, "Present address is required"],
+      trim: true,
+    },
+    bloodGroup: {
+      type: String,
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+      trim: true,
+    },
+    guardians: {
+      type: guardianSchema,
+      required: [true, "Guardian field is required"],
+    },
+    localGuardians: {
+      type: localGuardianSchema,
+      required: [true, "Local guardian field is required"],
+    },
+    profilePicture: { type: String, trim: true },
+    isActive: {
+      type: String,
+      enum: ["active", "blocked"],
+      default: "active",
+      trim: true,
+    },
+  
 });
 
-export const StudentModel = model<IStudents>("Student", studentsSchema);
+export const StudentModel = model<IStudent>("Student", studentSchema);
