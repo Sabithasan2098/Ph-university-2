@@ -22,7 +22,7 @@ export type LoacalGurdian = {
 export type IStudents = {
   id: string;
   name: userName;
-  gender: "male" | "female";
+  gender: "male" | "female"|"other";
   dateOfBirth: string;
   email: string;
   contactNo: string;

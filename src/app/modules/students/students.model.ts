@@ -31,7 +31,7 @@ const studentsSchema = new Schema<IStudents>({
   name: userNameSchema,
   gender: {
     type: String,
-    enum: ["male", "female"],
+    enum: ["male", "female","other"],
     required: true,
   },
   dateOfBirth: { type: String },
@@ -41,8 +41,7 @@ const studentsSchema = new Schema<IStudents>({
   presentAddress: { type: String, required: true },
   bloodGroup: {
     type: String,
-    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-    required: true,
+    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
   },
   gurdian: gurdianSchema,
   loacalGurdian: LoacalGurdianSchema,
