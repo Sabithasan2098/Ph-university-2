@@ -28,7 +28,16 @@ export type IStudent = {
   dateOfBirth?: string | undefined;
   contactNumber: string;
   emergencyContactNumber: string;
-  bloodGroup?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-" | undefined;
+  bloodGroup?:
+    | "A+"
+    | "A-"
+    | "B+"
+    | "B-"
+    | "AB+"
+    | "AB-"
+    | "O+"
+    | "O-"
+    | undefined;
   presentAddress: string;
   permanentAddress: string;
   guardians: Guardian;

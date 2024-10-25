@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import {
   Guardian,
-  IStudent, 
+  IStudent,
   LocalGuardian,
   UserName,
 } from "./students.interface";
@@ -79,62 +79,61 @@ const localGuardianSchema = new Schema<LocalGuardian>({
 // Update the studentSchema to reflect the IStudents structure
 const studentSchema = new Schema<IStudent>({
   id: { type: String, required: true, unique: true, trim: true },
-    name: {
-      type: userNameSchema,
-      required: [true, "Name field is required"],
+  name: {
+    type: userNameSchema,
+    required: [true, "Name field is required"],
+  },
+  gender: {
+    type: String,
+    enum: {
+      values: ["male", "female", "other"],
+      message: "{VALUE} is not correct",
     },
-    gender: {
-      type: String,
-      enum: {
-        values: ["male", "female", "other"],
-        message: "{VALUE} is not correct",
-      },
-      required: true,
-      trim: true,
-    },
-    dateOfBirth: { type: String, trim: true },
-    email: {
-      type: String,
-      required: [true, "Email is required"],
-      unique: true,
-      trim: true,
-    },
-    contactNumber: {
-      type: String,
-      required: [true, "Contact number is required"],
-      trim: true,
-    },
-    emergencyContactNumber: {
-      type: String,
-      required: [true, "Emergency contact number is required"],
-      trim: true,
-    },
-    presentAddress: {
-      type: String,
-      required: [true, "Present address is required"],
-      trim: true,
-    },
-    bloodGroup: {
-      type: String,
-      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-      trim: true,
-    },
-    guardians: {
-      type: guardianSchema,
-      required: [true, "Guardian field is required"],
-    },
-    localGuardians: {
-      type: localGuardianSchema,
-      required: [true, "Local guardian field is required"],
-    },
-    profilePicture: { type: String, trim: true },
-    isActive: {
-      type: String,
-      enum: ["active", "blocked"],
-      default: "active",
-      trim: true,
-    },
-  
+    required: true,
+    trim: true,
+  },
+  dateOfBirth: { type: String, trim: true },
+  email: {
+    type: String,
+    required: [true, "Email is required"],
+    unique: true,
+    trim: true,
+  },
+  contactNumber: {
+    type: String,
+    required: [true, "Contact number is required"],
+    trim: true,
+  },
+  emergencyContactNumber: {
+    type: String,
+    required: [true, "Emergency contact number is required"],
+    trim: true,
+  },
+  presentAddress: {
+    type: String,
+    required: [true, "Present address is required"],
+    trim: true,
+  },
+  bloodGroup: {
+    type: String,
+    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+    trim: true,
+  },
+  guardians: {
+    type: guardianSchema,
+    required: [true, "Guardian field is required"],
+  },
+  localGuardians: {
+    type: localGuardianSchema,
+    required: [true, "Local guardian field is required"],
+  },
+  profilePicture: { type: String, trim: true },
+  isActive: {
+    type: String,
+    enum: ["active", "blocked"],
+    default: "active",
+    trim: true,
+  },
 });
 
 export const StudentModel = model<IStudent>("Student", studentSchema);

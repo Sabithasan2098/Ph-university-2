@@ -10,9 +10,9 @@ import { studentValidationSchemaZodOnCreate } from "./students.validation";
 export const createStudent = async (req: Request, res: Response) => {
   try {
     const student = req.body.student;
-    
+
     // zod validation--------->
-    const zodValidationData = studentValidationSchemaZodOnCreate.parse(student)
+    const zodValidationData = studentValidationSchemaZodOnCreate.parse(student);
     const result = await createStudentIntoDB(zodValidationData);
     res.status(200).json({
       success: true,
