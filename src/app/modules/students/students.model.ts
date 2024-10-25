@@ -29,17 +29,29 @@ const LoacalGurdianSchema = new Schema<LoacalGurdian>({
 const studentsSchema = new Schema<IStudents>({
   id: { type: String },
   name: userNameSchema,
-  gender: ["male", "female"],
+  gender: {
+    type: String,
+    enum: ["male", "female"],
+    required: true,
+  },
   dateOfBirth: { type: String },
   email: { type: String, required: true },
   contactNo: { type: String, required: true },
   emergencyContactNo: { type: String, required: true },
   presentAddress: { type: String, required: true },
-  bloodGroup: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+  bloodGroup: {
+    type: String,
+    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+    required: true,
+  },
   gurdian: gurdianSchema,
   loacalGurdian: LoacalGurdianSchema,
   profileImg: { type: String },
-  isActive: ["active", "blocked"],
+  isActive: {
+    type: String,
+    enum: ["active", "blocked"],
+    required: true,
+  },
 });
 
 export const StudentModel = model<IStudents>("Student", studentsSchema);
