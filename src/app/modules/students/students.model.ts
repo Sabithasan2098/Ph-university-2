@@ -79,8 +79,9 @@ const localGuardianSchema = new Schema<LocalGuardian>({
 });
 
 // Update the studentSchema to reflect the IStudents structure
-const studentSchema = new Schema<IStudent,StudentModel,StudentMethod>({
+const studentSchema = new Schema<IStudent, StudentModel, StudentMethod>({
   id: { type: String, required: true, unique: true, trim: true },
+  password: { type: String, required: [true, "password is required"] },
   name: {
     type: userNameSchema,
     required: [true, "Name field is required"],
@@ -138,9 +139,22 @@ const studentSchema = new Schema<IStudent,StudentModel,StudentMethod>({
   },
 });
 
-studentSchema.methods.isUserExists = async function(id:string){
-  const existingUser = await StudentModelSchema.findOne({id})
-  return existingUser
-}
+// mongoose pre hook middleware---------------------------->
+studentSchema.pre("save", function () {
+  console.log(this, "mongoose pre hook called it");
+});
 
-export const StudentModelSchema = model<IStudent,StudentModel>("Student", studentSchema);
+// mongoose post hook middleware--------------------------->
+studentSchema.post("save", function () {
+  console.log(this, "mongoose post hook called it");
+});
+
+studentSchema.methods.isUserExists = async function (id: string) {
+  const existingUser = await StudentModelSchema.findOne({ id });
+  return existingUser;
+};
+
+export const StudentModelSchema = model<IStudent, StudentModel>(
+  "Student",
+  studentSchema,
+);

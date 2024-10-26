@@ -65,6 +65,10 @@ const localGuardianValidationSchema = z.object({
 
 export const studentValidationSchemaZodOnCreate = z.object({
   id: z.string().min(1, { message: "ID must not be empty" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be contain at lest 8 character" })
+    .max(20, "Don't contain password more than 20"),
   name: userNameValidationSchema,
   email: z
     .string()
