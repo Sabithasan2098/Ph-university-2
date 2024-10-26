@@ -7,6 +7,8 @@ import {
   StudentModel,
   UserName,
 } from "./students.interface";
+import bcrypt from "bcrypt";
+import config from "../../config";
 
 const userNameSchema = new Schema<UserName>({
   firstName: {
@@ -140,8 +142,12 @@ const studentSchema = new Schema<IStudent, StudentModel, StudentMethod>({
 });
 
 // mongoose pre hook middleware---------------------------->
-studentSchema.pre("save", function () {
-  console.log(this, "mongoose pre hook called it");
+// data save houar age password hash kore debe
+studentSchema.pre("save", async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(user.password, Number(config.bcryptSalt));
+  next()
 });
 
 // mongoose post hook middleware--------------------------->
