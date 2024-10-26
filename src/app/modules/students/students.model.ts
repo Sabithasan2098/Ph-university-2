@@ -3,6 +3,8 @@ import {
   Guardian,
   IStudent,
   LocalGuardian,
+  StudentMethod,
+  StudentModel,
   UserName,
 } from "./students.interface";
 
@@ -77,7 +79,7 @@ const localGuardianSchema = new Schema<LocalGuardian>({
 });
 
 // Update the studentSchema to reflect the IStudents structure
-const studentSchema = new Schema<IStudent>({
+const studentSchema = new Schema<IStudent,StudentModel,StudentMethod>({
   id: { type: String, required: true, unique: true, trim: true },
   name: {
     type: userNameSchema,
@@ -136,4 +138,9 @@ const studentSchema = new Schema<IStudent>({
   },
 });
 
-export const StudentModel = model<IStudent>("Student", studentSchema);
+studentSchema.methods.isUserExists = async function(id:string){
+  const existingUser = await StudentModelSchema.findOne({id})
+  return existingUser
+}
+
+export const StudentModelSchema = model<IStudent,StudentModel>("Student", studentSchema);

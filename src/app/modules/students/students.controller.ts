@@ -19,10 +19,10 @@ export const createStudent = async (req: Request, res: Response) => {
       message: "created student successfully",
       data: result,
     });
-  } catch (error) {
+  } catch (error:any) {
     res.status(200).json({
       success: false,
-      message: "Something went wrong",
+      message:error.message || "Something went wrong",
       data: error,
     });
   }
@@ -46,7 +46,7 @@ export const getAllStudents = async (req: Request, res: Response) => {
   }
 };
 
-// get all students from DB------------------------>
+// get a students from DB------------------------>
 export const getAStudent = async (req: Request, res: Response) => {
   try {
     const studentId = req.params.studentId;

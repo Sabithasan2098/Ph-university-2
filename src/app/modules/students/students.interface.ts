@@ -1,3 +1,5 @@
+import { Model } from "mongoose";
+
 export type Guardian = {
   fatherName: string;
   fatherOccupation: string;
@@ -45,3 +47,10 @@ export type IStudent = {
   profilePicture?: string | undefined;
   isActive: "active" | "blocked";
 };
+
+// create student instance method-------------------------->
+export type StudentMethod = {
+  isUserExists(id:string):Promise<IStudent | null>
+}
+
+export type StudentModel = Model<IStudent, Record<string,never>, StudentMethod>;
