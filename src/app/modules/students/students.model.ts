@@ -139,6 +139,10 @@ const studentSchema = new Schema<IStudent, StudentModel, StudentMethod>({
     default: "active",
     trim: true,
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // mongoose pre hook middleware---------------------------->
@@ -147,16 +151,31 @@ studentSchema.pre("save", async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this;
   user.password = await bcrypt.hash(user.password, Number(config.bcryptSalt));
-  next()
+  next();
+});
+
+// mongoose pre hook using isDeleted filed filtering------->
+studentSchema.pre("find", async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+studentSchema.pre("findOne", async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+studentSchema.pre("aggregate", async function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
 });
 
 // mongoose post hook middleware--------------------------->
 // after the save password filed goes empty
-studentSchema.post("save", function (doc,next) {
+studentSchema.post("save", function (doc, next) {
   doc.password = "";
-  next()
+  next();
 });
 
+// existing user------------------------------------------->
 studentSchema.methods.isUserExists = async function (id: string) {
   const existingUser = await StudentModelSchema.findOne({ id });
   return existingUser;

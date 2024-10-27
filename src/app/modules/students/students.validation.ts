@@ -104,4 +104,5 @@ export const studentValidationSchemaZodOnCreate = z.object({
   localGuardians: localGuardianValidationSchema,
   profilePicture: z.string().trim().optional(),
   isActive: z.enum(["active", "blocked"]).default("active"),
+  isDeleted:z.boolean().default(false)
 });

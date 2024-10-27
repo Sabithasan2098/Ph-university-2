@@ -47,6 +47,7 @@ export type IStudent = {
   localGuardians: LocalGuardian;
   profilePicture?: string | undefined;
   isActive: "active" | "blocked";
+  isDeleted:boolean
 };
 
 // create student instance method-------------------------->

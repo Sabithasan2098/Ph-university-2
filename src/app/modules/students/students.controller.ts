@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {
   createStudentIntoDB,
+  deleteAStudentDataByIdFromDB,
   getAllStudentsFromDB,
   getAStudentDataByIdFromDB,
 } from "./students.service";
@@ -37,7 +38,7 @@ export const getAllStudents = async (req: Request, res: Response) => {
       message: "Successfully get all students data",
       data: result,
     });
-  } catch (error) {
+  } catch (error:any) {
     res.status(200).json({
       success: false,
       message: "Something went wrong",
@@ -56,7 +57,27 @@ export const getAStudent = async (req: Request, res: Response) => {
       message: "Successfully get a single students data by id",
       data: result,
     });
-  } catch (error) {
+  } catch (error:any) {
+    res.status(200).json({
+      success: false,
+      message: "Something went wrong",
+      data: error,
+    });
+  }
+};
+
+// delete a student from DB------------------------>
+// actually we don't delete data just update a field
+export const deleteAStudent = async (req: Request, res: Response) => {
+  try {
+    const studentId = req.params.studentId;
+    const result = await deleteAStudentDataByIdFromDB(studentId);
+    res.status(200).json({
+      success: true,
+      message: "Successfully delete a single student data by id",
+      data: result,
+    });
+  } catch (error:any) {
     res.status(200).json({
       success: false,
       message: "Something went wrong",
