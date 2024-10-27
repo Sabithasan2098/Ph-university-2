@@ -151,8 +151,10 @@ studentSchema.pre("save", async function (next) {
 });
 
 // mongoose post hook middleware--------------------------->
-studentSchema.post("save", function () {
-  console.log(this, "mongoose post hook called it");
+// after the save password filed goes empty
+studentSchema.post("save", function (doc,next) {
+  doc.password = "";
+  next()
 });
 
 studentSchema.methods.isUserExists = async function (id: string) {
