@@ -143,7 +143,10 @@ const studentSchema = new Schema<IStudent, StudentModel, StudentMethod>({
     type: Boolean,
     default: false,
   },
-});
+},{toJSON:{
+  virtuals:true
+}}
+);
 
 // mongoose pre hook middleware---------------------------->
 // data save houar age password hash kore debe
@@ -174,6 +177,11 @@ studentSchema.post("save", function (doc, next) {
   doc.password = "";
   next();
 });
+
+// add a virtual field field and value which is doesn't exists in data base------------>
+studentSchema.virtual("fullName").get(function(){
+  return(`${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`)
+})
 
 // existing user------------------------------------------->
 studentSchema.methods.isUserExists = async function (id: string) {
