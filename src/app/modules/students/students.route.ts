@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  createStudent,
   deleteAStudent,
   getAllStudents,
   getAStudent,
@@ -8,8 +7,6 @@ import {
 
 const router = express.Router();
 
-// post a student data----------------------------------->
-router.post("/create-student", createStudent);
 
 // get all students data--------------------------------->
 router.get("/get-all-students-data", getAllStudents);

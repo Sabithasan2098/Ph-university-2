@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import {
   Guardian,
-  IStudent,
+  TStudent,
   LocalGuardian,
   StudentMethod,
   StudentModel,
@@ -81,8 +81,14 @@ const localGuardianSchema = new Schema<LocalGuardian>({
 });
 
 // Update the studentSchema to reflect the IStudents structure
-const studentSchema = new Schema<IStudent, StudentModel, StudentMethod>({
+const studentSchema = new Schema<TStudent, StudentModel, StudentMethod>({
   id: { type: String, required: true, unique: true, trim: true },
+  user:{
+    type:Schema.Types.ObjectId,
+    required:[true,"User id is required"],
+    unique:true,
+    ref:"User"
+  },
   password: { type: String, required: [true, "password is required"] },
   name: {
     type: userNameSchema,
@@ -133,12 +139,6 @@ const studentSchema = new Schema<IStudent, StudentModel, StudentMethod>({
     required: [true, "Local guardian field is required"],
   },
   profilePicture: { type: String, trim: true },
-  isActive: {
-    type: String,
-    enum: ["active", "blocked"],
-    default: "active",
-    trim: true,
-  },
   isDeleted: {
     type: Boolean,
     default: false,
@@ -189,7 +189,7 @@ studentSchema.methods.isUserExists = async function (id: string) {
   return existingUser;
 };
 
-export const StudentModelSchema = model<IStudent, StudentModel>(
+export const StudentModelSchema = model<TStudent, StudentModel>(
   "Student",
   studentSchema,
 );

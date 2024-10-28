@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 
 export type Guardian = {
   fatherName: string;
@@ -22,8 +22,9 @@ export type LocalGuardian = {
   address: string;
 };
 
-export type IStudent = {
+export type TStudent = {
   id: string;
+  user:Types.ObjectId
   password: string;
   name: UserName;
   email: string;
@@ -46,13 +47,12 @@ export type IStudent = {
   guardians: Guardian;
   localGuardians: LocalGuardian;
   profilePicture?: string | undefined;
-  isActive: "active" | "blocked";
   isDeleted:boolean
 };
 
 // create student instance method-------------------------->
 export type StudentMethod = {
-  isUserExists(id:string):Promise<IStudent | null>
+  isUserExists(id:string):Promise<TStudent | null>
 }
 
-export type StudentModel = Model<IStudent, Record<string,never>, StudentMethod>;
+export type StudentModel = Model<TStudent, Record<string,never>, StudentMethod>;

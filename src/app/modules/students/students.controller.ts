@@ -1,33 +1,11 @@
 import { Request, Response } from "express";
 import {
-  createStudentIntoDB,
   deleteAStudentDataByIdFromDB,
   getAllStudentsFromDB,
   getAStudentDataByIdFromDB,
 } from "./students.service";
-import { studentValidationSchemaZodOnCreate } from "./students.validation";
 
-//create a student--------------------------------->
-export const createStudent = async (req: Request, res: Response) => {
-  try {
-    const student = req.body.student;
 
-    // zod validation--------->
-    const zodValidationData = studentValidationSchemaZodOnCreate.parse(student);
-    const result = await createStudentIntoDB(zodValidationData);
-    res.status(200).json({
-      success: true,
-      message: "created student successfully",
-      data: result,
-    });
-  } catch (error:any) {
-    res.status(200).json({
-      success: false,
-      message:error.message || "Something went wrong",
-      data: error,
-    });
-  }
-};
 
 // get all students from DB------------------------>
 export const getAllStudents = async (req: Request, res: Response) => {
