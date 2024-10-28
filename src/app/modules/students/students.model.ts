@@ -7,8 +7,6 @@ import {
   StudentModel,
   UserName,
 } from "./students.interface";
-import bcrypt from "bcrypt";
-import config from "../../config";
 
 const userNameSchema = new Schema<UserName>({
   firstName: {
@@ -89,7 +87,6 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethod>({
     unique:true,
     ref:"User"
   },
-  password: { type: String, required: [true, "password is required"] },
   name: {
     type: userNameSchema,
     required: [true, "Name field is required"],
@@ -148,15 +145,9 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethod>({
 }}
 );
 
-// mongoose pre hook middleware---------------------------->
-// data save houar age password hash kore debe
-studentSchema.pre("save", async function (next) {
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this;
-  user.password = await bcrypt.hash(user.password, Number(config.bcryptSalt));
-  next();
-});
 
+
+// mongoose pre hook middleware---------------------------->
 // mongoose pre hook using isDeleted filed filtering------->
 studentSchema.pre("find", async function (next) {
   this.find({ isDeleted: { $ne: true } });
@@ -171,12 +162,7 @@ studentSchema.pre("aggregate", async function (next) {
   next();
 });
 
-// mongoose post hook middleware--------------------------->
-// after the save password filed goes empty
-studentSchema.post("save", function (doc, next) {
-  doc.password = "";
-  next();
-});
+
 
 // add a virtual field field and value which is doesn't exists in data base------------>
 studentSchema.virtual("fullName").get(function(){
