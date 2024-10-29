@@ -4,6 +4,7 @@ import {
   getAllStudentsFromDB,
   getAStudentDataByIdFromDB,
 } from "./students.service";
+import { sendResponse } from "../../utils/sendResponse";
 
 // get all students from DB------------------------>
 export const getAllStudents = async (
@@ -13,11 +14,17 @@ export const getAllStudents = async (
 ) => {
   try {
     const result = await getAllStudentsFromDB();
-    res.status(200).json({
-      success: true,
-      message: "Successfully get all students data",
-      data: result,
-    });
+    // res.status(200).json({
+    //   success: true,
+    //   message: "Successfully get all students data",
+    //   data: result,
+    // });
+    sendResponse(res,{
+      statusCode:200,
+      success:true,
+      message:"Student created successfully",
+      data:result
+    })
   } catch (error) {
     next(error);
   }
@@ -32,11 +39,12 @@ export const getAStudent = async (
   try {
     const studentId = req.params.studentId;
     const result = await getAStudentDataByIdFromDB(studentId);
-    res.status(200).json({
-      success: true,
-      message: "Successfully get a single students data by id",
-      data: result,
-    });
+    sendResponse(res,{
+      statusCode:200,
+      success:true,
+      message:"Student created successfully",
+      data:result
+    })
   } catch (error) {
     next(error);
   }
@@ -52,11 +60,12 @@ export const deleteAStudent = async (
   try {
     const studentId = req.params.studentId;
     const result = await deleteAStudentDataByIdFromDB(studentId);
-    res.status(200).json({
-      success: true,
-      message: "Successfully delete a single student data by id",
-      data: result,
-    });
+    sendResponse(res,{
+      statusCode:200,
+      success:true,
+      message:"Student created successfully",
+      data:result
+    })
   } catch (error) {
     next(error);
   }

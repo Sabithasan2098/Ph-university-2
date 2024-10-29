@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { createStudentIntoDB } from "./user.service";
+import { sendResponse } from "../../utils/sendResponse";
 
 //create a student--------------------------------->
 export const createStudent = async (req: Request, res: Response,next:NextFunction) => {
@@ -9,11 +10,12 @@ export const createStudent = async (req: Request, res: Response,next:NextFunctio
       // zod validation--------->
       // const zodValidationData = studentValidationSchemaZodOnCreate.parse(student);
       const result = await createStudentIntoDB(password,studentData);
-      res.status(200).json({
-        success: true,
-        message: "created student successfully",
-        data: result,
-      });
+      sendResponse(res,{
+        statusCode:200,
+        success:true,
+        message:"Student created successfully",
+        data:result
+      })
     } catch (error) {
      next(error)
     }
