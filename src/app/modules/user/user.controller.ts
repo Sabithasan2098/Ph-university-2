@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { createStudentIntoDB } from "./user.service";
 
 //create a student--------------------------------->
-export const createStudent = async (req: Request, res: Response) => {
+export const createStudent = async (req: Request, res: Response,next:NextFunction) => {
     try {
       const {password,student:studentData} = req.body;
   
@@ -14,11 +14,7 @@ export const createStudent = async (req: Request, res: Response) => {
         message: "created student successfully",
         data: result,
       });
-    } catch (error:any) {
-      res.status(200).json({
-        success: false,
-        message:error.message || "Something went wrong",
-        data: error,
-      });
+    } catch (error) {
+     next(error)
     }
   };

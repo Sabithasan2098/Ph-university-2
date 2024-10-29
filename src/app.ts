@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import { studentsRoutes } from "./app/modules/students/students.route";
 import { usersRoutes } from "./app/modules/user/user.route";
+import { globalErrorHandler } from "./app/middleware/globalErrorHandelar";
 const app: Application = express();
 
 // perser
@@ -15,7 +17,10 @@ app.use("/api/v1/students", studentsRoutes);
 app.use("/api/v1/users", usersRoutes);
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World! i am comming");
+  res.send("Hello World! i am coming");
 });
+
+// global error handling------------->
+app.use(globalErrorHandler)
 
 export default app;
