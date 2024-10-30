@@ -18,13 +18,13 @@ export const getAllStudents = catchAsync(
 
 // get a students from DB------------------------>
 export const getAStudent = catchAsync(async (req) => {
-  const studentId = req.params.id;
+  const studentId = req.params.studentId;
   return getAStudentDataByIdFromDB(studentId);
 }, "Student retrieve successfully");
 
 // delete a student from DB------------------------>
 // actually we don't delete data just update a field
 export const deleteAStudent = catchAsync(async(req) =>{
-  const studentId = req.params.id
+  const studentId = req.params.studentId
   return deleteAStudentDataByIdFromDB(studentId)
 },"Delete student data successfully")
