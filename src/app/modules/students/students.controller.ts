@@ -1,55 +1,30 @@
-import { RequestHandler } from "express";
+
 import {
   deleteAStudentDataByIdFromDB,
   getAllStudentsFromDB,
   getAStudentDataByIdFromDB,
 } from "./students.service";
-import { sendResponse } from "../../utils/sendResponse";
+import { catchAsync } from "../../utils/catchAsync";
+
+
+                                                          /*use higher order function*/ 
+
 
 // get all students from DB------------------------>
-export const getAllStudents: RequestHandler = async (req, res, next) => {
-  try {
-    const result = await getAllStudentsFromDB();
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Student created successfully",
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+export const getAllStudents = catchAsync(
+  getAllStudentsFromDB,
+  "Get all student successfully",
+);
 
 // get a students from DB------------------------>
-export const getAStudent: RequestHandler = async (req, res, next) => {
-  try {
-    const studentId = req.params.studentId;
-    const result = await getAStudentDataByIdFromDB(studentId);
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Student created successfully",
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+export const getAStudent = catchAsync(async (req) => {
+  const studentId = req.params.id;
+  return getAStudentDataByIdFromDB(studentId);
+}, "Student retrieve successfully");
 
 // delete a student from DB------------------------>
 // actually we don't delete data just update a field
-export const deleteAStudent: RequestHandler = async (req, res, next) => {
-  try {
-    const studentId = req.params.studentId;
-    const result = await deleteAStudentDataByIdFromDB(studentId);
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Student created successfully",
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+export const deleteAStudent = catchAsync(async(req) =>{
+  const studentId = req.params.id
+  return deleteAStudentDataByIdFromDB(studentId)
+},"Delete student data successfully")
