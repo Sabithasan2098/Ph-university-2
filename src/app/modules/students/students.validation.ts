@@ -64,44 +64,46 @@ const localGuardianValidationSchema = z.object({
 });
 
 export const studentValidationSchemaZodOnCreate = z.object({
-  id: z.string().min(1, { message: "ID must not be empty" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be contain at lest 8 character" })
-    .max(20, "Don't contain password more than 20"),
-  name: userNameValidationSchema,
-  email: z
-    .string()
-    .trim()
-    .email({ message: "Invalid email address" })
-    .min(1, { message: "Email must not be empty" }),
-  gender: z.enum(["male", "female", "other"], {
-    message: "Gender must be either male, female, or other",
+  body: z.object({
+    password: z
+      .string()
+      .min(8, { message: "Password must be contain at lest 8 character" })
+      .max(20, "Don't contain password more than 20"),
+   student:z.object({
+    name: userNameValidationSchema,
+    email: z
+      .string()
+      .trim()
+      .email({ message: "Invalid email address" })
+      .min(1, { message: "Email must not be empty" }),
+    gender: z.enum(["male", "female", "other"], {
+      message: "Gender must be either male, female, or other",
+    }),
+    dateOfBirth: z
+      .string()
+      .min(1, { message: "Date of birth must not be empty" }),
+    contactNumber: z
+      .string()
+      .min(1, { message: "Contact number must not be empty" }),
+    emergencyContactNumber: z
+      .string()
+      .trim()
+      .min(1, { message: "Emergency contact number must not be empty" }),
+    bloodGroup: z
+      .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+      .optional()
+      .default("O+"),
+    presentAddress: z
+      .string()
+      .trim()
+      .min(1, { message: "Present address must not be empty" }),
+    permanentAddress: z
+      .string()
+      .trim()
+      .min(1, { message: "Permanent address must not be empty" }),
+    guardians: guardianValidationSchema,
+    localGuardians: localGuardianValidationSchema,
+    profilePicture: z.string().trim().optional(),
+   })
   }),
-  dateOfBirth: z
-    .string()
-    .min(1, { message: "Date of birth must not be empty" }),
-  contactNumber: z
-    .string()
-    .min(1, { message: "Contact number must not be empty" }),
-  emergencyContactNumber: z
-    .string()
-    .trim()
-    .min(1, { message: "Emergency contact number must not be empty" }),
-  bloodGroup: z
-    .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
-    .optional()
-    .default("O+"),
-  presentAddress: z
-    .string()
-    .trim()
-    .min(1, { message: "Present address must not be empty" }),
-  permanentAddress: z
-    .string()
-    .trim()
-    .min(1, { message: "Permanent address must not be empty" }),
-  guardians: guardianValidationSchema,
-  localGuardians: localGuardianValidationSchema,
-  profilePicture: z.string().trim().optional(),
-  isDeleted:z.boolean().default(false)
 });
