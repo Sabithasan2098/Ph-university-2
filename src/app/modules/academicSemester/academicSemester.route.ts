@@ -1,6 +1,6 @@
 import express from "express";
 import { validateRequest } from "../../middleware/validateRequest";
-import { academicSemesterValidationSchema } from "./academicSemesterValidation";
+import { academicSemesterValidationSchema, updateAcademicSemesterValidationSchema } from "./academicSemesterValidation";
 import { createAcademicSemester, getAllAcademicSemesterData, getASingleAcademicSemesterData, updateAcademicSemester } from "./academicSemester,controller";
 
 const router = express.Router();
@@ -15,6 +15,6 @@ router.get("/get-all-semester-data", getAllAcademicSemesterData);
 router.get("/:semesterId", getASingleAcademicSemesterData);
 
 // update a semester data--------------------------------->
-router.patch("/:semesterId",updateAcademicSemester)
+router.patch("/:semesterId", validateRequest(updateAcademicSemesterValidationSchema),updateAcademicSemester)
 
 export const academicSemesterRoutes = router;

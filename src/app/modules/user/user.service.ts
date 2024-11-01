@@ -1,4 +1,5 @@
 import config from "../../config";
+// import { TAcademicSemester } from "../academicSemester/academicSemester.interface";
 import { TStudent } from "../students/students.interface";
 import { StudentModelSchema } from "../students/students.model";
 import { TUser } from "./user.interface";
@@ -18,20 +19,21 @@ export const createStudentIntoDB = async (
   // set student role
   userData.role = "student";
 
-  //  set manually generated id
+  // const generatedStudentId = (payload: TAcademicSemester) => {};
+
+  //  set generated id
   userData.id = "2030100001";
 
   // create a user
   const newUser = await userModelSchema.create(userData);
- 
+
   // create a student
-  if(Object.keys(newUser).length){
+  if (Object.keys(newUser).length) {
     // add id and _id
-    studentData.id = newUser.id  //embedding id
-    studentData.user = newUser._id //referencing id
+    studentData.id = newUser.id; //embedding id
+    studentData.user = newUser._id; //referencing id
 
-    const newStudent = StudentModelSchema.create(studentData)
-    return newStudent
+    const newStudent = StudentModelSchema.create(studentData);
+    return newStudent;
   }
-
 };

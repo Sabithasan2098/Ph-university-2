@@ -102,6 +102,7 @@ export const studentValidationSchemaZodOnCreate = z.object({
       guardians: guardianValidationSchema,
       localGuardians: localGuardianValidationSchema,
       profilePicture: z.string().trim().optional(),
+      admissionSemester:z.string()
     }),
   }),
 });
