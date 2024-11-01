@@ -27,8 +27,7 @@ export const createStudentIntoDB = async (
 
   // set the generated id
   if (admissionSemester) {
-  
-    userData.id = generatedStudentId(admissionSemester);
+    userData.id = await generatedStudentId(admissionSemester);
   } else {
     throw new Error("Create admissionSemester first");
   }
