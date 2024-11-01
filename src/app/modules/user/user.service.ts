@@ -1,14 +1,15 @@
 import config from "../../config";
-// import { TAcademicSemester } from "../academicSemester/academicSemester.interface";
+import { academicSemesterModel } from "../academicSemester/academicSemester.model";
 import { TStudent } from "../students/students.interface";
 import { StudentModelSchema } from "../students/students.model";
 import { TUser } from "./user.interface";
 import { userModelSchema } from "./user.model";
+import { generatedStudentId } from "./user.utils";
 
 // create a student------------------------------------->
 export const createStudentIntoDB = async (
   password: string,
-  studentData: TStudent,
+  payload: TStudent,
 ) => {
   // create a user obj
   const userData: Partial<TUser> = {};
@@ -19,10 +20,18 @@ export const createStudentIntoDB = async (
   // set student role
   userData.role = "student";
 
-  // const generatedStudentId = (payload: TAcademicSemester) => {};
+  // find the admissionSemester info
+  const admissionSemester = await academicSemesterModel.findById(
+    payload.admissionSemester,
+  );
 
-  //  set generated id
-  userData.id = "2030100001";
+  // set the generated id
+  if (admissionSemester) {
+  
+    userData.id = generatedStudentId(admissionSemester);
+  } else {
+    throw new Error("Create admissionSemester first");
+  }
 
   // create a user
   const newUser = await userModelSchema.create(userData);
@@ -30,10 +39,10 @@ export const createStudentIntoDB = async (
   // create a student
   if (Object.keys(newUser).length) {
     // add id and _id
-    studentData.id = newUser.id; //embedding id
-    studentData.user = newUser._id; //referencing id
+    payload.id = newUser.id; //embedding id
+    payload.user = newUser._id; //referencing id
 
-    const newStudent = StudentModelSchema.create(studentData);
+    const newStudent = StudentModelSchema.create(payload);
     return newStudent;
   }
 };
