@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import config from "../../config";
 import { academicSemesterModel } from "../academicSemester/academicSemester.model";
 import { TStudent } from "../students/students.interface";
@@ -5,6 +6,7 @@ import { StudentModelSchema } from "../students/students.model";
 import { TUser } from "./user.interface";
 import { userModelSchema } from "./user.model";
 import { generatedStudentId } from "./user.utils";
+import { appError } from "../../error/custom.appError";
 
 // create a student------------------------------------->
 export const createStudentIntoDB = async (
@@ -25,23 +27,46 @@ export const createStudentIntoDB = async (
     payload.admissionSemester,
   );
 
-  // set the generated id
-  if (admissionSemester) {
-    userData.id = await generatedStudentId(admissionSemester);
-  } else {
-    throw new Error("Create admissionSemester first");
-  }
+  const session = await mongoose.startSession(); /*create session*/
 
-  // create a user
-  const newUser = await userModelSchema.create(userData);
+  try {
+    session.startTransaction(); /*start the transection*/
+    // set the generated id
+    if (admissionSemester) {
+      userData.id = await generatedStudentId(admissionSemester);
+    } else {
+      throw new Error("Create admissionSemester first");
+    }
 
-  // create a student
-  if (Object.keys(newUser).length) {
+    // create a user (transection-1)
+    const newUser = await userModelSchema.create([userData], {
+      session,
+    }); /*session phathano*/ /*transection ert jonno [ ] er babohar kora hoice*/
+
+    // create a student
+    if (!newUser.length) {
+      throw new appError(400, "Faield to create user");
+    }
     // add id and _id
-    payload.id = newUser.id; //embedding id
-    payload.user = newUser._id; //referencing id
+    payload.id = newUser[0].id; //embedding id
+    payload.user = newUser[0]._id; //referencing id
 
-    const newStudent = StudentModelSchema.create(payload);
+    // create student transection-2
+
+    const newStudent = await StudentModelSchema.create([payload], {
+      session,
+    }); /*session phathano*/ /*transection ert jonno [ ] er babohar kora hoice*/
+
+    if (!newStudent.length) {
+      throw new appError(400, "Faield to create user");
+    }
+
+    // of this transection
+    await session.commitTransaction(); /*successful hole commit kora*/
+    await session.endSession(); /*session send kora*/
     return newStudent;
+  } catch (error) {
+    await session.abortTransaction(); /*faield hole transection off kora*/
+    await session.endSession(); /*session send kora*/
   }
 };
