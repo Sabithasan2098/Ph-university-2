@@ -24,7 +24,7 @@ export type LocalGuardian = {
 
 export type TStudent = {
   id: string;
-  user:Types.ObjectId
+  user: Types.ObjectId;
   password: string;
   name: UserName;
   email: string;
@@ -47,13 +47,18 @@ export type TStudent = {
   guardians: Guardian;
   localGuardians: LocalGuardian;
   profilePicture?: string | undefined;
-  admissionSemester:Types.ObjectId;
-  isDeleted:boolean
+  admissionSemester: Types.ObjectId;
+  academicDepartment: Types.ObjectId;
+  isDeleted: boolean;
 };
 
 // create student instance method-------------------------->
 export type StudentMethod = {
-  isUserExists(id:string):Promise<TStudent | null>
-}
+  isUserExists(id: string): Promise<TStudent | null>;
+};
 
-export type StudentModel = Model<TStudent, Record<string,never>, StudentMethod>;
+export type StudentModel = Model<
+  TStudent,
+  Record<string, never>,
+  StudentMethod
+>;

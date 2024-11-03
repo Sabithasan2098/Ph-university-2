@@ -1,4 +1,4 @@
-import {  z } from "zod";
+import { z } from "zod";
 
 const userNameValidationSchema = z.object({
   firstName: z
@@ -102,7 +102,8 @@ export const studentValidationSchemaZodOnCreate = z.object({
       guardians: guardianValidationSchema,
       localGuardians: localGuardianValidationSchema,
       profilePicture: z.string().trim().optional(),
-      admissionSemester:z.string()
+      admissionSemester: z.string(),
+      academicDepartment: z.string(),
     }),
   }),
 });

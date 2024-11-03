@@ -79,74 +79,80 @@ const localGuardianSchema = new Schema<LocalGuardian>({
 });
 
 // Update the studentSchema to reflect the IStudents structure
-const studentSchema = new Schema<TStudent, StudentModel, StudentMethod>({
-  id: { type: String, required: true, unique: true, trim: true },
-  user:{
-    type:Schema.Types.ObjectId,
-    required:[true,"User id is required"],
-    unique:true,
-    ref:"User"
-  },
-  name: {
-    type: userNameSchema,
-    required: [true, "Name field is required"],
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ["male", "female", "other"],
-      message: "{VALUE} is not correct",
+const studentSchema = new Schema<TStudent, StudentModel, StudentMethod>(
+  {
+    id: { type: String, required: true, unique: true, trim: true },
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, "User id is required"],
+      unique: true,
+      ref: "User",
     },
-    required: true,
-    trim: true,
+    name: {
+      type: userNameSchema,
+      required: [true, "Name field is required"],
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ["male", "female", "other"],
+        message: "{VALUE} is not correct",
+      },
+      required: true,
+      trim: true,
+    },
+    dateOfBirth: Date,
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      trim: true,
+    },
+    contactNumber: {
+      type: String,
+      required: [true, "Contact number is required"],
+      trim: true,
+    },
+    emergencyContactNumber: {
+      type: String,
+      required: [true, "Emergency contact number is required"],
+      trim: true,
+    },
+    presentAddress: {
+      type: String,
+      required: [true, "Present address is required"],
+      trim: true,
+    },
+    bloodGroup: {
+      type: String,
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+      trim: true,
+    },
+    guardians: {
+      type: guardianSchema,
+      required: [true, "Guardian field is required"],
+    },
+    localGuardians: {
+      type: localGuardianSchema,
+      required: [true, "Local guardian field is required"],
+    },
+    profilePicture: { type: String, trim: true },
+    admissionSemester: { type: Schema.Types.ObjectId, ref: "AcademicSemester" },
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      ref: "academicDepartment",
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  dateOfBirth : Date,
-  email: {
-    type: String,
-    required: [true, "Email is required"],
-    unique: true,
-    trim: true,
+  {
+    toJSON: {
+      virtuals: true,
+    },
   },
-  contactNumber: {
-    type: String,
-    required: [true, "Contact number is required"],
-    trim: true,
-  },
-  emergencyContactNumber: {
-    type: String,
-    required: [true, "Emergency contact number is required"],
-    trim: true,
-  },
-  presentAddress: {
-    type: String,
-    required: [true, "Present address is required"],
-    trim: true,
-  },
-  bloodGroup: {
-    type: String,
-    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-    trim: true,
-  },
-  guardians: {
-    type: guardianSchema,
-    required: [true, "Guardian field is required"],
-  },
-  localGuardians: {
-    type: localGuardianSchema,
-    required: [true, "Local guardian field is required"],
-  },
-  profilePicture: { type: String, trim: true },
-  admissionSemester:{type:Schema.Types.ObjectId,ref:"AcademicSemester"},
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-},{toJSON:{
-  virtuals:true
-}}
 );
-
-
 
 // mongoose pre hook middleware---------------------------->
 // mongoose pre hook using isDeleted filed filtering------->
@@ -163,12 +169,10 @@ studentSchema.pre("aggregate", async function (next) {
   next();
 });
 
-
-
 // add a virtual field field and value which is doesn't exists in data base------------>
-studentSchema.virtual("fullName").get(function(){
-  return(`${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`)
-})
+studentSchema.virtual("fullName").get(function () {
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
+});
 
 // existing user------------------------------------------->
 studentSchema.methods.isUserExists = async function (id: string) {
