@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { StudentModelSchema } from "./students.model";
 import { appError } from "../../error/custom.appError";
 import { userModelSchema } from "../user/user.model";
+import { TStudent } from "./students.interface";
 
 // get all students------------------------------------->
 export const getAllStudentsFromDB = async () => {
@@ -15,6 +16,47 @@ export const getAStudentDataByIdFromDB = async (id: string) => {
     "admissionSemester",
   );
   // const result = await StudentModelSchema.aggregate([{ $match: { id: id } }]);
+  return result;
+};
+
+// update a single student data---------------------------->
+export const updateAStudentDataByIdFromDB = async (
+  id: string,
+  payload: Partial<TStudent>,
+) => {
+  const { name, guardians, localGuardians, ...remainingStudentData } = payload;
+
+  const modifiedData: Record<string, unknown> = { ...remainingStudentData };
+
+  // for name
+  if (name && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      modifiedData[`name.${key}`] = value;
+    }
+  }
+
+  // for guardian
+  if (guardians && Object.keys(guardians).length) {
+    for (const [key, value] of Object.entries(guardians)) {
+      modifiedData[`guardians.${key}`] = value;
+    }
+  }
+
+  // for localGuardians
+  if (localGuardians && Object.keys(localGuardians).length) {
+    for (const [key, value] of Object.entries(localGuardians)) {
+      modifiedData[`localGuardians.${key}`] = value;
+    }
+  }
+
+  const result = await StudentModelSchema.findOneAndUpdate(
+    { id },
+    modifiedData,
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
   return result;
 };
 
@@ -55,8 +97,10 @@ export const deleteAStudentDataByIdFromDB = async (id: string) => {
     await session.commitTransaction(); /*successful hole commit kora*/
     await session.endSession(); /*session send kora*/
     return deleteStudent;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     await session.abortTransaction(); /*faield hole transection off kora*/
     await session.endSession(); /*session send kora*/
+    throw new appError(400, "Student not create");
   }
 };

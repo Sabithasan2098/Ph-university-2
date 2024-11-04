@@ -107,3 +107,59 @@ export const studentValidationSchemaZodOnCreate = z.object({
     }),
   }),
 });
+
+// update----------->
+// Define optional schemas for updates
+const userNameValidationSchemaOptional = userNameValidationSchema.partial();
+const guardianValidationSchemaOptional = guardianValidationSchema.partial();
+const localGuardianValidationSchemaOptional =
+  localGuardianValidationSchema.partial();
+
+export const studentValidationSchemaZodOnUpdate = z.object({
+  body: z.object({
+    student: z
+      .object({
+        name: userNameValidationSchemaOptional,
+        email: z
+          .string()
+          .trim()
+          .email({ message: "Invalid email address" })
+          .min(1, { message: "Email must not be empty" })
+          .optional(),
+        gender: z
+          .enum(["male", "female", "other"], {
+            message: "Gender must be either male, female, or other",
+          })
+          .optional(),
+        dateOfBirth: z.string().optional(),
+        contactNumber: z
+          .string()
+          .min(1, { message: "Contact number must not be empty" })
+          .optional(),
+        emergencyContactNumber: z
+          .string()
+          .trim()
+          .min(1, { message: "Emergency contact number must not be empty" })
+          .optional(),
+        bloodGroup: z
+          .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+          .optional(),
+        presentAddress: z
+          .string()
+          .trim()
+          .min(1, { message: "Present address must not be empty" })
+          .optional(),
+        permanentAddress: z
+          .string()
+          .trim()
+          .min(1, { message: "Permanent address must not be empty" })
+          .optional(),
+        guardians: guardianValidationSchemaOptional,
+        localGuardians: localGuardianValidationSchemaOptional,
+        profilePicture: z.string().trim().optional(),
+        admissionSemester: z.string().optional(),
+        academicDepartment: z.string().optional(),
+      })
+      .partial(),
+  }),
+});

@@ -65,8 +65,10 @@ export const createStudentIntoDB = async (
     await session.commitTransaction(); /*successful hole commit kora*/
     await session.endSession(); /*session send kora*/
     return newStudent;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     await session.abortTransaction(); /*faield hole transection off kora*/
     await session.endSession(); /*session send kora*/
+    throw new appError(400, "User not create");
   }
 };

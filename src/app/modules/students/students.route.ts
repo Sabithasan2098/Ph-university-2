@@ -3,16 +3,25 @@ import {
   deleteAStudent,
   getAllStudents,
   getAStudent,
+  updateAStudent,
 } from "./students.controller";
+import { validateRequest } from "../../middleware/validateRequest";
+import { studentValidationSchemaZodOnUpdate } from "./students.validation";
 
 const router = express.Router();
-
 
 // get all students data--------------------------------->
 router.get("/get-all-students-data", getAllStudents);
 
 // get a students data--------------------------------->
 router.get("/:studentId", getAStudent);
+
+// update a students data--------------------------------->
+router.patch(
+  "/:studentId",
+  validateRequest(studentValidationSchemaZodOnUpdate),
+  updateAStudent,
+);
 
 // delete student data--------------------------------->
 // actually we don't delete data just update a field
