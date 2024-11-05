@@ -15,6 +15,7 @@ export const globalErrorHandler: ErrorRequestHandler = (
   let errorSourses: TErrorSourses = [
     {
       path: "",
+
       message: "something went wrong",
     },
   ];
@@ -32,6 +33,7 @@ export const globalErrorHandler: ErrorRequestHandler = (
     return {
       statusCode,
       message: "Validation error",
+
       errorSourses,
       stack: config.NODE_ENV === "development" ? err?.stack : null,
     };
