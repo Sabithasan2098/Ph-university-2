@@ -3,6 +3,8 @@ import { ZodError } from "zod";
 import { TErrorSourses } from "../../interface/error";
 import { handleZodError } from "../error/custom.zodError";
 import { handleValidationError } from "../error/custom.validationError";
+import config from "../config";
+import { handleCastError } from "../error/custom.castError";
 
 export const globalErrorHandler: ErrorRequestHandler = (
   err,
@@ -30,13 +32,19 @@ export const globalErrorHandler: ErrorRequestHandler = (
     statusCode = simplefied?.statusCode;
     message = simplefied?.message;
     errorSourses = simplefied?.errorSourses;
+  } else if (err?.name === "CastError") {
+    const simplefied = handleCastError(err);
+    statusCode = simplefied?.statusCode;
+    message = simplefied?.message;
+    errorSourses = simplefied?.errorSourses;
   }
 
   res.status(statusCode).json({
     success: false,
     message: message,
-    // error: err,
+    error: err,
     errorSourses,
+    stack: config.NODE_ENV === "development" ? err?.stack : null,
   });
   next();
 };

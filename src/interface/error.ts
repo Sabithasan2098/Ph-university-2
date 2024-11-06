@@ -3,8 +3,9 @@ export type TErrorSourses = {
   message: string;
 }[];
 
-export type TGenericErrorResponse = {
+type TGenericErrorResponse = {
   statusCode: number;
   message: string;
   errorSourses: TErrorSourses;
 };
+export default TGenericErrorResponse;

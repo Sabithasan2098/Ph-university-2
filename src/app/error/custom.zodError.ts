@@ -1,5 +1,5 @@
 import { ZodError, ZodIssue } from "zod";
-import { TErrorSourses, TGenericErrorResponse } from "../../interface/error";
+import TGenericErrorResponse, { TErrorSourses } from "../../interface/error";
 
 export const handleZodError = (err: ZodError): TGenericErrorResponse => {
   const statusCode = 400;

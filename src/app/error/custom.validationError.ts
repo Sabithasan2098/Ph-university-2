@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { TErrorSourses, TGenericErrorResponse } from "../../interface/error";
+import TGenericErrorResponse, { TErrorSourses } from "../../interface/error";
 
 export const handleValidationError = (
   err: mongoose.Error.ValidationError,
