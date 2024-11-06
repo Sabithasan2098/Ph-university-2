@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
-import config from "../config";
-import { TErrorSourses } from "../../interface/error";
+import { TErrorSourses, TGenericErrorResponse } from "../../interface/error";
 
-export const handleValidationError = (err: mongoose.Error.ValidationError) => {
+export const handleValidationError = (
+  err: mongoose.Error.ValidationError,
+): TGenericErrorResponse => {
   const statusCode = 400;
 
   const errorSourses: TErrorSourses = Object.values(err.errors).map(
@@ -17,6 +18,5 @@ export const handleValidationError = (err: mongoose.Error.ValidationError) => {
     statusCode,
     message: "Validation error",
     errorSourses,
-    stack: config.NODE_ENV === "development" ? err?.stack : null,
   };
 };
