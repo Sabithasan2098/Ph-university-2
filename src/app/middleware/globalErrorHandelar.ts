@@ -5,6 +5,7 @@ import { handleZodError } from "../error/custom.zodError";
 import { handleValidationError } from "../error/custom.validationError";
 import config from "../config";
 import { handleCastError } from "../error/custom.castError";
+import { handleDuplicateError } from "../error/custom.duplicateError";
 
 export const globalErrorHandler: ErrorRequestHandler = (
   err,
@@ -34,6 +35,11 @@ export const globalErrorHandler: ErrorRequestHandler = (
     errorSourses = simplefied?.errorSourses;
   } else if (err?.name === "CastError") {
     const simplefied = handleCastError(err);
+    statusCode = simplefied?.statusCode;
+    message = simplefied?.message;
+    errorSourses = simplefied?.errorSourses;
+  } else if (err?.code === 11000) {
+    const simplefied = handleDuplicateError(err);
     statusCode = simplefied?.statusCode;
     message = simplefied?.message;
     errorSourses = simplefied?.errorSourses;
