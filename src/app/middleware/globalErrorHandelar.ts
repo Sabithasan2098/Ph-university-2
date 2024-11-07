@@ -6,6 +6,7 @@ import { handleValidationError } from "../error/custom.validationError";
 import config from "../config";
 import { handleCastError } from "../error/custom.castError";
 import { handleDuplicateError } from "../error/custom.duplicateError";
+import { appError } from "../error/custom.appError";
 
 export const globalErrorHandler: ErrorRequestHandler = (
   err,
@@ -13,8 +14,8 @@ export const globalErrorHandler: ErrorRequestHandler = (
   res,
   next,
 ) => {
-  let statusCode = err.statusCode || 500;
-  let message = err.message || "something went wrong";
+  let statusCode = 500;
+  let message = "something went wrong";
 
   let errorSourses: TErrorSourses = [
     {
@@ -24,25 +25,48 @@ export const globalErrorHandler: ErrorRequestHandler = (
   ];
 
   if (err instanceof ZodError) {
+    //zod error
     const simplefied = handleZodError(err);
     statusCode = simplefied?.statusCode;
     message = simplefied?.message;
     errorSourses = simplefied?.errorSourses;
   } else if (err?.name === "ValidationError") {
+    //mongoose validation error
     const simplefied = handleValidationError(err);
     statusCode = simplefied?.statusCode;
     message = simplefied?.message;
     errorSourses = simplefied?.errorSourses;
   } else if (err?.name === "CastError") {
+    //cast error
     const simplefied = handleCastError(err);
     statusCode = simplefied?.statusCode;
     message = simplefied?.message;
     errorSourses = simplefied?.errorSourses;
   } else if (err?.code === 11000) {
+    //duplicate error
     const simplefied = handleDuplicateError(err);
     statusCode = simplefied?.statusCode;
     message = simplefied?.message;
     errorSourses = simplefied?.errorSourses;
+  } else if (err instanceof appError) {
+    //app error
+    statusCode = err?.statusCode;
+    message = err?.message;
+    errorSourses = [
+      {
+        path: "",
+        message: err?.message,
+      },
+    ];
+  } else if (err instanceof Error) {
+    //app error
+    message = err?.message;
+    errorSourses = [
+      {
+        path: "",
+        message: err?.message,
+      },
+    ];
   }
 
   res.status(statusCode).json({
