@@ -46,12 +46,15 @@ export const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   const sortOrder = query.sortOrder === "desc" ? -1 : 1;
   // http://localhost:5000/api/v1/students/get-all-students-data?sortBy=id&sortOrder=desc   //you have use this to sort
 
-  // set limit------------------------------>
+  // set limit & pagination------------------------------>
   const limit = query.limit ? parseInt(query.limit as string, 10) : 10;
+  // pagination------------------------------------------>
+  const page = query.page ? parseInt(query.page as string, 10) : 1;
+  const skip = (page - 1) * limit;
 
   // query filtering------------------------>
   const queryObj = { ...query };
-  const excludeFields = ["searchTerm", "sortBy", "sortOrder", "limit"];
+  const excludeFields = ["searchTerm", "sortBy", "sortOrder", "limit", "page"];
   excludeFields.forEach((el) => delete queryObj[el]);
   // --------------------------------------->
 
@@ -59,6 +62,7 @@ export const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
     $and: [{ $or: searchQuery }, queryObj],
   })
     .sort({ [sortBy]: sortOrder })
+    .skip(skip)
     .limit(limit)
     .populate("admissionSemester");
   return result;
