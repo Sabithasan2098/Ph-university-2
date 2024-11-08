@@ -28,27 +28,39 @@ export const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
     "localGuardians.address",
   ];
 
-  // searchTerm----------------------------->
+  // সার্চ টার্ম সেটআপ করা----------------------------->
   //ata partial search
   let searchTerm = "";
   if (query?.searchTerm) {
     searchTerm = query.searchTerm as string;
   }
 
+  // সার্চ কন্ডিশন তৈরি করা----------------------------->
   const searchQuery = searchAbleField.map((field) => ({
     [field]: { $regex: searchTerm, $options: "i" },
   }));
   // --------------------------------------->
 
+  // create sort method--------------------->
+  const sortBy = query.sortBy ? (query.sortBy as string) : "id";
+  const sortOrder = query.sortOrder === "desc" ? -1 : 1;
+  // http://localhost:5000/api/v1/students/get-all-students-data?sortBy=id&sortOrder=desc   //you have use this to sort
+
+  // set limit------------------------------>
+  const limit = query.limit ? parseInt(query.limit as string, 10) : 10;
+
   // query filtering------------------------>
   const queryObj = { ...query };
-  const excludeFields = ["searchTerm"];
+  const excludeFields = ["searchTerm", "sortBy", "sortOrder", "limit"];
   excludeFields.forEach((el) => delete queryObj[el]);
   // --------------------------------------->
 
   const result = await StudentModelSchema.find({
     $and: [{ $or: searchQuery }, queryObj],
-  }).populate("admissionSemester");
+  })
+    .sort({ [sortBy]: sortOrder })
+    .limit(limit)
+    .populate("admissionSemester");
   return result;
 };
 
