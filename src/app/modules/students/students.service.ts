@@ -6,16 +6,48 @@ import { TStudent } from "./students.interface";
 
 // get all students------------------------------------->
 export const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
-  let searchTerm = "";
+  const searchAbleField = [
+    "name.firstName",
+    "name.middleName",
+    "name.lastName",
+    "gender",
+    "email",
+    "contactNumber",
+    "emergencyContactNumber",
+    "presentAddress",
+    "bloodGroup",
+    "guardians.fatherName",
+    "guardians.fatherOccupation",
+    "guardians.fatherContactNumber",
+    "guardians.motherName",
+    "guardians.motherOccupation",
+    "guardians.motherOccupation",
+    "localGuardians.name",
+    "localGuardians.occupation",
+    "localGuardians.contactNumber",
+    "localGuardians.address",
+  ];
 
+  // searchTerm----------------------------->
+  //ata partial search
+  let searchTerm = "";
   if (query?.searchTerm) {
-    searchTerm = query?.searchTerm as string;
+    searchTerm = query.searchTerm as string;
   }
 
+  const searchQuery = searchAbleField.map((field) => ({
+    [field]: { $regex: searchTerm, $options: "i" },
+  }));
+  // --------------------------------------->
+
+  // query filtering------------------------>
+  const queryObj = { ...query };
+  const excludeFields = ["searchTerm"];
+  excludeFields.forEach((el) => delete queryObj[el]);
+  // --------------------------------------->
+
   const result = await StudentModelSchema.find({
-    $or: ["email", "name.firstName", "presentAddress"].map((field) => ({
-      [field]: { $regex: searchTerm, $options: "i" },
-    })),
+    $and: [{ $or: searchQuery }, queryObj],
   }).populate("admissionSemester");
   return result;
 };
