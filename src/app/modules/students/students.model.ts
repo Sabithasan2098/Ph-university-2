@@ -171,7 +171,7 @@ studentSchema.pre("aggregate", async function (next) {
 
 // add a virtual field field and value which is doesn't exists in data base------------>
 studentSchema.virtual("fullName").get(function () {
-  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
+  return `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`;
 });
 
 // existing user------------------------------------------->

@@ -52,15 +52,28 @@ export const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   const page = query.page ? parseInt(query.page as string, 10) : 1;
   const skip = (page - 1) * limit;
 
+  // field limiting-------------------------------------->
+  const fields = query.fields
+    ? (query.fields as string).replace(/,/g, " ")
+    : " ";
+
   // query filtering------------------------>
   const queryObj = { ...query };
-  const excludeFields = ["searchTerm", "sortBy", "sortOrder", "limit", "page"];
+  const excludeFields = [
+    "searchTerm",
+    "sortBy",
+    "sortOrder",
+    "limit",
+    "page",
+    "fields",
+  ];
   excludeFields.forEach((el) => delete queryObj[el]);
   // --------------------------------------->
 
   const result = await StudentModelSchema.find({
     $and: [{ $or: searchQuery }, queryObj],
   })
+    .select(fields)
     .sort({ [sortBy]: sortOrder })
     .skip(skip)
     .limit(limit)
