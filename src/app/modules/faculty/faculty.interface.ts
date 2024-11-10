@@ -24,8 +24,8 @@ export type TFaculty = {
   gender: TGender;
   dateOfBirth?: Date;
   email: string;
-  contactNo: string;
-  emergencyContactNo: string;
+  contactNumber: string;
+  emergencyContactNumber: string;
   bloodGroup?: TBloodGroup;
   presentAddress: string;
   permanentAddress: string;

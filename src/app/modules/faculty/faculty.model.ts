@@ -58,11 +58,11 @@ const facultySchema = new Schema<TFaculty>(
       required: [true, "email is required"],
       unique: true,
     },
-    contactNo: {
+    contactNumber: {
       type: String,
       required: [true, "Contact number is required"],
     },
-    emergencyContactNo: {
+    emergencyContactNumber: {
       type: String,
       required: [true, "Emergency contact number is required"],
     },
