@@ -58,3 +58,54 @@ export const facultyValidationSchemaZodOnCreate = z.object({
     isDeleted: z.boolean().default(false),
   }),
 });
+
+// for-update--------------------->
+
+const facultyNameValidationUpdate = z.object({
+  firstName: z
+    .string()
+    .trim()
+    .min(1, { message: "First Name must be at least 1 character" })
+    .max(20, { message: "First name cannot be more than 20 characters" })
+    .refine((value) => /^[A-Z]/.test(value), {
+      message: "First name must start with a capital letter",
+    })
+    .optional(),
+  middleName: z.string().trim().optional(),
+  lastName: z
+    .string()
+    .trim()
+    .min(1, { message: "Last name must be at least 1 character" })
+    .max(20, { message: "Last name cannot be more than 20 characters" })
+    .optional(),
+});
+
+export const facultyValidationSchemaZodOnUpdate = z.object({
+  body: z.object({
+    id: z.string().trim().optional(),
+    user: z.string().optional(),
+    designation: z
+      .string()
+      .trim()
+      .min(1, { message: "Designation must be at least 1 character" })
+      .optional(),
+    name: facultyNameValidationUpdate.optional(),
+    gender: z.enum(["male", "female", "other"]).optional(),
+    dateOfBirth: z.string().optional(),
+    email: z
+      .string()
+      .trim()
+      .email({ message: "Invalid email address" })
+      .optional(),
+    contactNumber: z.string().trim().optional(),
+    emergencyContactNumber: z.string().trim().optional(),
+    bloodGroup: z
+      .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+      .optional(),
+    presentAddress: z.string().trim().optional(),
+    permanentAddress: z.string().trim().optional(),
+    profileImg: z.string().trim().optional(),
+    academicDepartment: z.string().optional(),
+    isDeleted: z.boolean().optional(),
+  }),
+});
