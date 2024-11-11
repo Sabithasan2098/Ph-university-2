@@ -1,4 +1,6 @@
+import { appError } from "../../error/custom.appError";
 import { catchAsync } from "../../utils/catchAsync";
+import { FacultyModelSchema } from "./faculty.model";
 import {
   createFacultyIntoDB,
   deleteFacultyIntoDB,
@@ -20,18 +22,36 @@ export const getAllFaculty = catchAsync(async () => {
 // get-a-single-faculty--------------------------->
 export const getASingleFaculty = catchAsync(async (req) => {
   const facultyId = req.params.facultyId;
-  return await getASingleFacultyIntoDB(facultyId);
+  // check this provided id is valid or not
+  const existingFaculty = await FacultyModelSchema.isUserExists(facultyId);
+  if (existingFaculty) {
+    return await getASingleFacultyIntoDB(facultyId);
+  } else {
+    throw new appError(400, "Faculty not found");
+  }
 }, "Get a single faculty successful");
 
 // get-a-single-faculty-and-update---------------->
 export const updateFaculty = catchAsync(async (req) => {
   const facultyId = req.params.facultyId;
   const facultyData = req.body;
-  return await updateFacultyIntoDB(facultyData, facultyId);
+  // check this provided id is valid or not
+  const existingFaculty = await FacultyModelSchema.isUserExists(facultyId);
+  if (existingFaculty) {
+    return await updateFacultyIntoDB(facultyData, facultyId);
+  } else {
+    throw new appError(400, "Invalid Id");
+  }
 }, "Update faculty successful");
 
 // get-a-single-faculty-and-delete---------------->
 export const deleteFaculty = catchAsync(async (req) => {
   const facultyId = req.params.facultyId;
-  return await deleteFacultyIntoDB(facultyId);
+  // check this provided id is valid or not
+  const existingFaculty = await FacultyModelSchema.isUserExists(facultyId);
+  if (existingFaculty) {
+    return await deleteFacultyIntoDB(facultyId);
+  } else {
+    throw new appError(400, "Invalid Id");
+  }
 }, "Delete faculty successfully");

@@ -120,7 +120,18 @@ facultySchema.virtual("fullName").get(function () {
   return `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`;
 });
 
+// is faculty exists purpose---------------------------------->
+// Define the static method `isUserExists` on the schema's `statics`
+facultySchema.statics.isUserExists = async function (id: string) {
+  return await this.findOne({ id });
+};
+// export const FacultyModelSchema = model<TFaculty>(
+//   "Faculty",
+//   facultySchema,
+// );
+
 export const FacultyModelSchema = model<TFaculty, FacultyModel>(
   "Faculty",
   facultySchema,
 );
+// ----------------------------------------------------------------//
