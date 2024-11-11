@@ -44,3 +44,40 @@ export const generatedStudentId = async (payload: TAcademicSemester) => {
   incrementId = `${payload.year}${payload.code}${incrementId}`;
   return incrementId;
 };
+
+// find last faculty------------->
+
+const findLastFacultyId = async () => {
+  const lastFaculty = await userModelSchema
+    .findOne(
+      {
+        role: "faculty",
+      },
+      {
+        id: 1,
+        _id: 0,
+      },
+    )
+    .sort({
+      createdAt: -1,
+    })
+    .lean();
+  return lastFaculty?.id ? lastFaculty.id : undefined;
+};
+
+export const generatedFacultyId = async () => {
+  // get the current id
+  let currentId = (0).toString(); //default id
+
+  const lastFacultyId = await findLastFacultyId();
+
+  if (lastFacultyId) {
+    currentId = lastFacultyId.substring(2);
+  }
+
+  // incrementId
+  let incrementId = (Number(currentId) + 1).toString().padStart(4, "0");
+  // set the id
+  incrementId = `F-${incrementId}`;
+  return incrementId;
+};

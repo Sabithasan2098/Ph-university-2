@@ -135,9 +135,9 @@ export const updateAStudentDataByIdFromDB = async (
 // actually we don't delete data just update a field
 export const deleteAStudentDataByIdFromDB = async (id: string) => {
   const session =
-    await mongoose.startSession(); /*start session to transection*/
+    await mongoose.startSession(); /*start session to transaction*/
   try {
-    session.startTransaction(); /*start transection */
+    session.startTransaction(); /*start transaction */
     const deleteStudent = await StudentModelSchema.findOneAndUpdate(
       { id },
       { isDeleted: true },
@@ -170,7 +170,7 @@ export const deleteAStudentDataByIdFromDB = async (id: string) => {
     return deleteStudent;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    await session.abortTransaction(); /*faield hole transection off kora*/
+    await session.abortTransaction(); /*faield hole transaction off kora*/
     await session.endSession(); /*session send kora*/
     throw new appError(400, "Student not create");
   }

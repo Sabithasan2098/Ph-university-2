@@ -20,7 +20,7 @@ const userSchema = new Schema<TUser>(
     role: {
       type: String,
       enum: {
-        values: ["admin", "student", "user"],
+        values: ["admin", "student", "faculty"],
       },
     },
     isDeleted: {
@@ -32,7 +32,7 @@ const userSchema = new Schema<TUser>(
       enum: {
         values: ["in-progress", "blocked"],
       },
-      default:"in-progress"
+      default: "in-progress",
     },
   },
   {
@@ -55,6 +55,5 @@ userSchema.post("save", function (doc, next) {
   doc.password = "";
   next();
 });
-
 
 export const userModelSchema = model<TUser>("user", userSchema);

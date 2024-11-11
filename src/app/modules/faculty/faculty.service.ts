@@ -1,11 +1,8 @@
+import mongoose from "mongoose";
 import { TFaculty } from "./faculty.interface";
 import { FacultyModelSchema } from "./faculty.model";
-
-// create faculty--------------->
-export const createFacultyIntoDB = async (payload: TFaculty) => {
-  const result = await FacultyModelSchema.create(payload);
-  return result;
-};
+import { appError } from "../../error/custom.appError";
+import { userModelSchema } from "../user/user.model";
 
 // get faculty------------------>
 export const getAllFacultyIntoDB = async () => {
@@ -32,10 +29,33 @@ export const updateFacultyIntoDB = async (
 
 // get a single faculty and delete------------------>
 export const deleteFacultyIntoDB = async (id: string) => {
-  const result = await FacultyModelSchema.findOneAndUpdate(
-    { id },
-    { isDeleted: true },
-    { new: true },
-  );
-  return result;
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    const deleteFaculty = await FacultyModelSchema.findOneAndUpdate(
+      { id },
+      { isDeleted: true },
+      { new: true, session },
+    );
+    if (!deleteFaculty) {
+      throw new appError(400, "Faield to delete student");
+    }
+    // delete-user--------------------->
+    const deleteUser = await userModelSchema.findOneAndUpdate(
+      { id },
+      { isDeleted: true },
+      { new: true, session },
+    );
+    if (!deleteUser) {
+      throw new appError(400, "Faield to delete user");
+    }
+    await session.commitTransaction();
+    await session.endSession();
+    return deleteFaculty;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new appError(400, "Faculty not create");
+  }
 };

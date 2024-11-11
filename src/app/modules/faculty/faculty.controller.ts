@@ -2,17 +2,11 @@ import { appError } from "../../error/custom.appError";
 import { catchAsync } from "../../utils/catchAsync";
 import { FacultyModelSchema } from "./faculty.model";
 import {
-  createFacultyIntoDB,
   deleteFacultyIntoDB,
   getAllFacultyIntoDB,
   getASingleFacultyIntoDB,
   updateFacultyIntoDB,
 } from "./faculty.service";
-
-// create-faculty------------------------>
-export const createFaculty = catchAsync(async (req) => {
-  return await createFacultyIntoDB(req.body);
-}, "Create faculty is successful");
 
 // get-faculty--------------------------->
 export const getAllFaculty = catchAsync(async () => {
