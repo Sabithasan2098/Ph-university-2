@@ -100,6 +100,21 @@ const facultySchema = new Schema<TFaculty>(
   },
 );
 
+// searching isDeleted=true in all faculty data------------>
+facultySchema.pre("find", async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+facultySchema.pre("findOne", async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+facultySchema.pre("aggregate", async function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
+});
+// --------------------------------------------------------
+
 // get the full name of faculty--------------->
 facultySchema.virtual("fullName").get(function () {
   return `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`;

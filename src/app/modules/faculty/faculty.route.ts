@@ -6,6 +6,7 @@ import {
 } from "./faculty.validation";
 import {
   createFaculty,
+  deleteFaculty,
   getAllFaculty,
   getASingleFaculty,
   updateFaculty,
@@ -34,6 +35,6 @@ router.patch(
 );
 
 // delete faculty by generatedId---->
-router.delete("/:facultyId");
+router.delete("/:facultyId", deleteFaculty);
 
 export const facultyRoutes = router;

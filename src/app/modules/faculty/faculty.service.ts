@@ -32,6 +32,10 @@ export const updateFacultyIntoDB = async (
 
 // get a single faculty and delete------------------>
 export const deleteFacultyIntoDB = async (id: string) => {
-  const result = await FacultyModelSchema.findOneAndUpdate({ id });
+  const result = await FacultyModelSchema.findOneAndUpdate(
+    { id },
+    { isDeleted: true },
+    { new: true },
+  );
   return result;
 };
