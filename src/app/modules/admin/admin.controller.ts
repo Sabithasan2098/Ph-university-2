@@ -1,7 +1,11 @@
 import { appError } from "../../error/custom.appError";
 import { catchAsync } from "../../utils/catchAsync";
 import { AdminModelSchema } from "./admin.model";
-import { getAllAdminIntoDB, getASingleAdminIntoDB } from "./admin.service";
+import {
+  getAllAdminIntoDB,
+  getASingleAdminIntoDB,
+  updateSingleAdminIntoDB,
+} from "./admin.service";
 
 // get all admin--------->
 export const getAllAdmin = catchAsync(async () => {
@@ -18,3 +22,18 @@ export const getASingleAdmin = catchAsync(async (req) => {
     throw new appError(400, "Invalid Id");
   }
 }, "Get admin successfully");
+
+// get a single admin and update-------------->
+export const updateAdmin = catchAsync(async (req) => {
+  const { adminId } = req.params;
+  const adminData = req.body.admin;
+  const isAdminExists = await AdminModelSchema.isUserExists(adminId);
+  if (!isAdminExists) {
+    throw new appError(400, "Invalid Id");
+  }
+  const updatedAdminData = await updateSingleAdminIntoDB(adminData, adminId);
+  if (!updatedAdminData) {
+    throw new appError(404, "Admin not found or update failed");
+  }
+  return updatedAdminData;
+}, "Update successful");

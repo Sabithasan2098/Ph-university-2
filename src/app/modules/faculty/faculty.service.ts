@@ -21,9 +21,25 @@ export const updateFacultyIntoDB = async (
   payload: Partial<TFaculty>,
   id: string,
 ) => {
-  const result = await FacultyModelSchema.findOneAndUpdate({ id }, payload, {
-    new: true,
-  });
+  const { name, ...remainingFacultyData } = payload;
+
+  const modifiedData: Record<string, unknown> = { ...remainingFacultyData };
+
+  // for name
+  if (name && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      modifiedData[`name.${key}`] = value;
+    }
+  }
+
+  const result = await FacultyModelSchema.findOneAndUpdate(
+    { id },
+    modifiedData,
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
   return result;
 };
 

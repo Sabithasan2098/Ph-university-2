@@ -28,7 +28,7 @@ export const getASingleFaculty = catchAsync(async (req) => {
 // get-a-single-faculty-and-update---------------->
 export const updateFaculty = catchAsync(async (req) => {
   const facultyId = req.params.facultyId;
-  const facultyData = req.body;
+  const facultyData = req.body.faculty;
   // check this provided id is valid or not
   const existingFaculty = await FacultyModelSchema.isUserExists(facultyId);
   if (existingFaculty) {
