@@ -5,11 +5,17 @@ import { TStudent } from "../students/students.interface";
 import { StudentModelSchema } from "../students/students.model";
 import { TUser } from "./user.interface";
 import { userModelSchema } from "./user.model";
-import { generatedFacultyId, generatedStudentId } from "./user.utils";
+import {
+  generatedAdminId,
+  generatedFacultyId,
+  generatedStudentId,
+} from "./user.utils";
 import { appError } from "../../error/custom.appError";
 import { TFaculty } from "../faculty/faculty.interface";
 import { FacultyModelSchema } from "../faculty/faculty.model";
 import { academicDepartmentModel } from "../academicDepartment/academicDepartment.model";
+import { TAdmin } from "../admin/admin.interface";
+import { AdminModelSchema } from "../admin/admin.model";
 
 // create a student------------------------------------->
 export const createStudentIntoDB = async (
@@ -134,5 +140,47 @@ export const createFacultyIntoDB = async (
     await session.abortTransaction();
     await session.endSession();
     throw new Error(err);
+  }
+};
+
+// create-admin-with-user-------------------------------->
+export const createAdminIntoDB = async (password: string, payload: TAdmin) => {
+  // create a admin object
+  const userData: Partial<TUser> = {};
+  // if password does not given from client site give a default password
+  userData.password = password || (config.default_pass as string);
+  // set admin role
+  userData.role = "admin";
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+    userData.id = await generatedAdminId();
+
+    // create a user(transaction-1)
+    const newUser = await userModelSchema.create([userData], { session });
+    // check was user create
+    if (!newUser.length) {
+      throw new appError(400, "Faield to create user");
+    }
+    // set id ,_id as user
+    payload.id = newUser[0].id;
+    payload.user = newUser[0]._id;
+    // create faculty(transaction-2)
+    const newAdmin = await AdminModelSchema.create([payload], { session });
+    // check was admin create
+    if (!newAdmin) {
+      throw new appError(400, "Faield to create admin");
+    }
+    await session.commitTransaction();
+    await session.endSession();
+    return newAdmin;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(error);
   }
 };

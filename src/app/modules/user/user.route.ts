@@ -1,8 +1,9 @@
 import express from "express";
-import { createFaculty, createStudent } from "./user.controller";
+import { createAdmin, createFaculty, createStudent } from "./user.controller";
 import { validateRequest } from "../../middleware/validateRequest";
 import { studentValidationSchemaZodOnCreate } from "../students/students.validation";
 import { facultyValidationSchemaZodOnCreate } from "../faculty/faculty.validation";
+import { adminValidationSchemaZodOnCreate } from "../admin/admin.validation";
 
 const router = express.Router();
 
@@ -20,4 +21,10 @@ router.post(
   createFaculty,
 );
 
+// post a admin
+router.post(
+  "/create-admin",
+  validateRequest(adminValidationSchemaZodOnCreate),
+  createAdmin,
+);
 export const usersRoutes = router;
