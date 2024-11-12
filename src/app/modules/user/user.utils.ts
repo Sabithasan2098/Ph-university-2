@@ -1,5 +1,4 @@
 import { TAcademicSemester } from "../academicSemester/academicSemester.interface";
-import { AdminModelSchema } from "../admin/admin.model";
 import { userModelSchema } from "./user.model";
 
 const findLastStudentId = async () => {
@@ -85,15 +84,16 @@ export const generatedFacultyId = async () => {
 
 // find last admin
 const findLastAdminId = async () => {
-  const lastAdmin = await AdminModelSchema.findOne(
-    {
-      role: "admin",
-    },
-    {
-      id: 1,
-      _id: 0,
-    },
-  )
+  const lastAdmin = await userModelSchema //always find in userModelSchema
+    .findOne(
+      {
+        role: "admin",
+      },
+      {
+        id: 1,
+        _id: 0,
+      },
+    )
     .sort({
       createdAt: -1,
     })

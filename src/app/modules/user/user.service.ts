@@ -167,7 +167,7 @@ export const createAdminIntoDB = async (password: string, payload: TAdmin) => {
     // set id ,_id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
-    // create faculty(transaction-2)
+    // create admin(transaction-2)
     const newAdmin = await AdminModelSchema.create([payload], { session });
     // check was admin create
     if (!newAdmin) {

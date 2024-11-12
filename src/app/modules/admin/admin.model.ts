@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { TAdmin, TUser } from "./admin.interface";
+import { AdminModel, TAdmin, TUser } from "./admin.interface";
 import { BloodGroup, Gender } from "./admin.constant";
 
 const userNameSchema = new Schema<TUser>({
@@ -97,4 +97,9 @@ const adminSchema = new Schema<TAdmin>(
   },
 );
 
-export const AdminModelSchema = model<TAdmin>("Admin", adminSchema);
+// isUserExists----------------------->
+adminSchema.statics.isUserExists = async function (id: string) {
+  return await this.findOne({ id });
+};
+
+export const AdminModelSchema = model<TAdmin, AdminModel>("Admin", adminSchema);

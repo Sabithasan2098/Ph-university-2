@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { Model, Types } from "mongoose";
 
 export type TUser = {
   firstName: string;
@@ -32,3 +32,7 @@ export type TAdmin = {
   profileImg?: string;
   isDeleted: boolean;
 };
+
+export interface AdminModel extends Model<TAdmin> {
+  isUserExists(id: string): Promise<TAdmin | null>;
+}
