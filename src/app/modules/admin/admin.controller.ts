@@ -2,6 +2,7 @@ import { appError } from "../../error/custom.appError";
 import { catchAsync } from "../../utils/catchAsync";
 import { AdminModelSchema } from "./admin.model";
 import {
+  deleteAdminIntoDB,
   getAllAdminIntoDB,
   getASingleAdminIntoDB,
   updateSingleAdminIntoDB,
@@ -37,3 +38,17 @@ export const updateAdmin = catchAsync(async (req) => {
   }
   return updatedAdminData;
 }, "Update successful");
+
+// delete admin--------------->
+export const deleteAdmin = catchAsync(async (req) => {
+  const { adminId } = req.params;
+  const isAdminExists = await AdminModelSchema.isUserExists(adminId);
+  if (!isAdminExists) {
+    throw new appError(400, "Invalid Id");
+  }
+  const deleteAdminData = await deleteAdminIntoDB(adminId);
+  if (!deleteAdminData) {
+    throw new appError(400, "try again to delete");
+  }
+  return deleteAdminData;
+}, "Delete admin successful");

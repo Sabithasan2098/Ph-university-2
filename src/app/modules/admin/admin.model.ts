@@ -97,6 +97,26 @@ const adminSchema = new Schema<TAdmin>(
   },
 );
 
+// searching isDeleted=true in all admin data------------>
+adminSchema.pre("find", async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+adminSchema.pre("findOne", async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+adminSchema.pre("aggregate", async function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
+});
+// --------------------------------------------------------
+
+// get the full name of admin--------------->
+adminSchema.virtual("fullName").get(function () {
+  return `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`;
+});
+
 // isUserExists----------------------->
 adminSchema.statics.isUserExists = async function (id: string) {
   return await this.findOne({ id });
