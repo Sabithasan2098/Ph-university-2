@@ -94,23 +94,85 @@ export const updateCourseIntoDB = async (
   id: string,
   payload: Partial<TCourse>,
 ) => {
-  const { preRequisiteCourses, ...courseRemainingData } = payload;
+  const session = await CourseModel.startSession();
+  session.startTransaction();
+  try {
+    const { preRequisiteCourses, ...courseRemainingData } = payload;
 
-  // update basic
-  const updateBasicCourseData = await CourseModel.findByIdAndUpdate(
-    id,
-    courseRemainingData,
-    { new: true, runValidators: true },
-  );
+    // update basic
+    const updateBasicCourseData = await CourseModel.findByIdAndUpdate(
+      id,
+      courseRemainingData,
+      {
+        new: true,
+        runValidators: true,
+        session,
+      },
+    );
 
-  if (preRequisiteCourses && preRequisiteCourses.length > 0) {
-    const deletedPreRequisite = preRequisiteCourses
-      .filter((el) => el.course && el.isDeleted)
-      .map((el) => el.course);
-    const deletedPreRequisiteCourses = await CourseModel.findByIdAndUpdate(id, {
-      $pull: { preRequisiteCourses: { course: { $in: deletedPreRequisite } } },
-    });
+    if (!updateBasicCourseData) {
+      throw new appError(400, "faield to update course data ");
+    }
+
+    if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+      // check isDeleted = true & remove from database
+
+      const deletedPreRequisite = preRequisiteCourses
+        .filter((el) => el.course && el.isDeleted)
+        .map((el) => el.course);
+      const deletedPreRequisiteCourses = await CourseModel.findByIdAndUpdate(
+        id,
+        {
+          $pull: {
+            preRequisiteCourses: { course: { $in: deletedPreRequisite } },
+          },
+        },
+        { new: true, runValidators: true, session },
+      );
+
+      if (!deletedPreRequisiteCourses) {
+        throw new appError(400, "faield to update course data ");
+      }
+      // check isDeleted = false & add to database
+      // prevent duplicates
+      const existingCourseIds = (
+        await CourseModel.findById(id, { preRequisiteCourses: 1 })
+      )?.preRequisiteCourses
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .map((item: any) => item.course.toString());
+
+      const newPrerequisite = preRequisiteCourses?.filter(
+        (el) =>
+          el.course &&
+          !el.isDeleted &&
+          !existingCourseIds?.includes(el.course.toString()),
+      );
+      if (newPrerequisite.length > 0) {
+        const newPrerequisiteCourses = await CourseModel.findByIdAndUpdate(
+          id,
+          {
+            $addToSet: { preRequisiteCourses: { $each: newPrerequisite } },
+          },
+          { new: true, runValidators: true, session },
+        );
+
+        if (!newPrerequisiteCourses) {
+          throw new appError(400, "faield to update course data ");
+        }
+      }
+    }
+
+    const result = await CourseModel.findById(id).populate(
+      "preRequisiteCourses.course",
+    );
+    await session.commitTransaction();
+    await session.endSession();
+
+    return result;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new appError(400, "faield to update course data ");
   }
-
-  return updateBasicCourseData;
 };
