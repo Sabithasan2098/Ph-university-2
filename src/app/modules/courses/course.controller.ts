@@ -4,6 +4,7 @@ import {
   deleteCourseIntoDB,
   getAllCourseIntoDB,
   getSingleCourseIntoDB,
+  updateCourseIntoDB,
 } from "./course.service";
 
 // create course------------------------------>
@@ -27,3 +28,10 @@ export const deleteCourse = catchAsync(async (req) => {
   const id = req.params.id;
   return await deleteCourseIntoDB(id);
 }, "Delete course successfully");
+
+// update course---------------------->
+export const updateCourse = catchAsync(async (req) => {
+  const id = req.params.id;
+  const data = req.body;
+  return await updateCourseIntoDB(id, data);
+}, "Update course successfully");

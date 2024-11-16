@@ -11,8 +11,12 @@ export const validationCourseZodOnCreate = z.object({
     prefix: z.string(),
     code: z.number(),
     credits: z.number(),
+    isDeleted: z.boolean().optional().default(false),
     preRequisiteCourses: z
       .array(preRequisiteCoursesValidationOnCreate)
       .optional(),
   }),
 });
+
+export const validationCourseZodOnUpdate =
+  validationCourseZodOnCreate.partial();
