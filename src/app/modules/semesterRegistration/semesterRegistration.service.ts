@@ -7,7 +7,18 @@ export const createSemesterRegistrationIntoDB = async (
   payload: TSemesterRegistration,
 ) => {
   const academicSemester = payload?.academicSemester;
+  //   check if there are any UPCOMING || ONGOING status already exists or not
+  const isThereAnyUpcomingOrOngoingSemester =
+    await SemesterRegistrationModel.findOne({
+      $or: [{ status: "UPCOMING" }, { status: "ONGOING" }],
+    });
 
+  if (isThereAnyUpcomingOrOngoingSemester) {
+    throw new appError(
+      400,
+      `There is already ${isThereAnyUpcomingOrOngoingSemester.status} semester exists`,
+    );
+  }
   // first check academic semester exists or not
   const isAcademicSemesterExists =
     await academicSemesterModel.findById(academicSemester);
@@ -107,5 +118,32 @@ export const getAllSemesterRegistrationIntoDB = async (
 export const getSingleSemesterRegistrationIntoDB = async (id: string) => {
   const result =
     await SemesterRegistrationModel.findById(id).populate("academicSemester");
+  return result;
+};
+
+// update-single-semesterRegister------------------------>
+export const updateSingleSemesterRegistrationIntoDB = async (
+  id: string,
+  payload: Partial<TSemesterRegistration>,
+) => {
+  // check is this data present or not
+  const isSemesterExists = await SemesterRegistrationModel.findById(id);
+  if (!isSemesterExists) {
+    throw new appError(400, "This semester is not exists");
+  }
+
+  // if the semesterRegister was ended don't allow to update
+  const isSemesterRegisterEnded = await SemesterRegistrationModel.findById(id);
+  if (isSemesterRegisterEnded?.status === "ENDED") {
+    throw new appError(
+      400,
+      `This semester is already ended so that you can't update this ${id}`,
+    );
+  }
+
+  const result = await SemesterRegistrationModel.findByIdAndUpdate(
+    id,
+    payload,
+  ).populate("academicSemester");
   return result;
 };

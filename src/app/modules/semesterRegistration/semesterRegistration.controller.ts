@@ -3,6 +3,7 @@ import {
   createSemesterRegistrationIntoDB,
   getAllSemesterRegistrationIntoDB,
   getSingleSemesterRegistrationIntoDB,
+  updateSingleSemesterRegistrationIntoDB,
 } from "./semesterRegistration.service";
 
 export const createSemesterRegistration = catchAsync(async (req) => {
@@ -18,4 +19,10 @@ export const getAllSemesterRegister = catchAsync(async (req) => {
 export const getSingleSemesterRegistration = catchAsync(async (req) => {
   const { id } = req.params;
   return await getSingleSemesterRegistrationIntoDB(id);
+}, "Get single data successfully");
+
+// get single semesterRegister------------------->
+export const updateSingleSemesterRegistration = catchAsync(async (req) => {
+  const { id } = req.params;
+  return await updateSingleSemesterRegistrationIntoDB(id, req.body);
 }, "Get single data successfully");

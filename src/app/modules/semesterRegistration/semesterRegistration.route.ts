@@ -1,10 +1,14 @@
 import express from "express";
 import { validateRequest } from "../../middleware/validateRequest";
-import { semesterRegistrationValidationZodOnCreate } from "./semesterRegistration.validation";
+import {
+  semesterRegistrationValidationZodOnCreate,
+  updateSemesterRegistrationValidationZodOnCreate,
+} from "./semesterRegistration.validation";
 import {
   createSemesterRegistration,
   getAllSemesterRegister,
   getSingleSemesterRegistration,
+  updateSingleSemesterRegistration,
 } from "./semesterRegistration.controller";
 
 const router = express.Router();
@@ -25,12 +29,12 @@ router.get("/:id", getSingleSemesterRegistration);
 // // delete a course data--------------------------------->
 // router.delete("/:id", delete);
 
-// // update a course data--------------------------------->
-// router.patch(
-//   "/:id",
-//   validateRequest(validationCourseZodOnUpdate),
-//   updateCourse,
-// );
+// update a semesterRegistration data--------------------------------->
+router.patch(
+  "/:id",
+  validateRequest(updateSemesterRegistrationValidationZodOnCreate),
+  updateSingleSemesterRegistration,
+);
 
 // //
 // router.put(

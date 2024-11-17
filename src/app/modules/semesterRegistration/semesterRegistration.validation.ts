@@ -10,3 +10,7 @@ export const semesterRegistrationValidationZodOnCreate = z.object({
     maxCredit: z.number(),
   }),
 });
+
+export const updateSemesterRegistrationValidationZodOnCreate = z.object({
+  body: semesterRegistrationValidationZodOnCreate.shape.body.partial(),
+});
