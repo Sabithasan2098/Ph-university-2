@@ -5,6 +5,7 @@ import {
   deleteCourseIntoDB,
   getAllCourseIntoDB,
   getSingleCourseIntoDB,
+  removeFacultiesInCourseIntoDB,
   updateCourseIntoDB,
 } from "./course.service";
 
@@ -43,3 +44,10 @@ export const assignFaculties = catchAsync(async (req) => {
   const { faculties } = req.body;
   return await assignFacultiesInCourseIntoDB(courseId, faculties);
 }, "Assign faculties successfully");
+
+// remove faculties---------------------->
+export const removeFaculties = catchAsync(async (req) => {
+  const { courseId } = req.params;
+  const { faculties } = req.body;
+  return await removeFacultiesInCourseIntoDB(courseId, faculties);
+}, "Remove faculties successfully");

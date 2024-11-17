@@ -177,6 +177,7 @@ export const updateCourseIntoDB = async (
   }
 };
 
+// add faculties into course----------------------->
 export const assignFacultiesInCourseIntoDB = async (
   id: string,
   payload: Partial<TCourseFaculty>,
@@ -188,6 +189,21 @@ export const assignFacultiesInCourseIntoDB = async (
       $addToSet: { faculties: { $each: payload } },
     },
     { upsert: true, new: true },
+  );
+  return result;
+};
+
+// remove faculties into course----------------------->
+export const removeFacultiesInCourseIntoDB = async (
+  id: string,
+  payload: Partial<TCourseFaculty>,
+) => {
+  const result = await CourseFacultyModel.findByIdAndUpdate(
+    id,
+    {
+      $pull: { faculties: { $in: payload } },
+    },
+    { new: true },
   );
   return result;
 };

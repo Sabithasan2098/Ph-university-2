@@ -11,6 +11,7 @@ import {
   deleteCourse,
   getAllCourse,
   getSingleCourse,
+  removeFaculties,
   updateCourse,
 } from "./course.controller";
 
@@ -39,11 +40,18 @@ router.patch(
   updateCourse,
 );
 
-//
+// add faculties into course--------------------------->
 router.put(
   "/:courseId/faculties",
   validateRequest(courseFacultyValidation),
   assignFaculties,
+);
+
+// remove faculties into course--------------------------->
+router.delete(
+  "/:courseId/remove-faculties",
+  validateRequest(courseFacultyValidation),
+  removeFaculties,
 );
 
 export const courseRoutes = router;
