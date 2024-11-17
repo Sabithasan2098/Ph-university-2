@@ -1,7 +1,11 @@
 import express from "express";
 import { validateRequest } from "../../middleware/validateRequest";
 import { semesterRegistrationValidationZodOnCreate } from "./semesterRegistration.validation";
-import { createSemesterRegistration } from "./semesterRegistration.controller";
+import {
+  createSemesterRegistration,
+  getAllSemesterRegister,
+  getSingleSemesterRegistration,
+} from "./semesterRegistration.controller";
 
 const router = express.Router();
 
@@ -12,11 +16,11 @@ router.post(
   createSemesterRegistration,
 );
 
-// // get all course data--------------------------------->
-// router.get("/get-all-semesterRegistration-data", getAllCourse);
+// get all course data--------------------------------->
+router.get("/get-all-semesterRegistration-data", getAllSemesterRegister);
 
-// // get a course data--------------------------------->
-// router.get("/:id", getSingleSemesterRegistration);
+// get a course data--------------------------------->
+router.get("/:id", getSingleSemesterRegistration);
 
 // // delete a course data--------------------------------->
 // router.delete("/:id", delete);
