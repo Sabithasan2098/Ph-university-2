@@ -18,5 +18,11 @@ export const validationCourseZodOnCreate = z.object({
   }),
 });
 
+export const courseFacultyValidation = z.object({
+  body: z.object({
+    faculties: z.array(z.string()),
+  }),
+});
+
 export const validationCourseZodOnUpdate =
   validationCourseZodOnCreate.partial();

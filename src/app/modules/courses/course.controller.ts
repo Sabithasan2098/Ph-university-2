@@ -1,5 +1,6 @@
 import { catchAsync } from "../../utils/catchAsync";
 import {
+  assignFacultiesInCourseIntoDB,
   createCourseIntoDB,
   deleteCourseIntoDB,
   getAllCourseIntoDB,
@@ -35,3 +36,10 @@ export const updateCourse = catchAsync(async (req) => {
   const data = req.body;
   return await updateCourseIntoDB(id, data);
 }, "Update course successfully");
+
+// assign faculties---------------------->
+export const assignFaculties = catchAsync(async (req) => {
+  const { courseId } = req.params;
+  const { faculties } = req.body;
+  return await assignFacultiesInCourseIntoDB(courseId, faculties);
+}, "Assign faculties successfully");

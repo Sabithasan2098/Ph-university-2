@@ -1,6 +1,6 @@
 import { appError } from "../../error/custom.appError";
-import { TCourse } from "./course.interface";
-import { CourseModel } from "./course.model";
+import { TCourse, TCourseFaculty } from "./course.interface";
+import { CourseFacultyModel, CourseModel } from "./course.model";
 
 // create course------------------------------------->
 export const createCourseIntoDB = async (payload: TCourse) => {
@@ -175,4 +175,19 @@ export const updateCourseIntoDB = async (
     await session.endSession();
     throw new appError(400, "faield to update course data ");
   }
+};
+
+export const assignFacultiesInCourseIntoDB = async (
+  id: string,
+  payload: Partial<TCourseFaculty>,
+) => {
+  const result = await CourseFacultyModel.findByIdAndUpdate(
+    id,
+    {
+      course: id,
+      $addToSet: { faculties: { $each: payload } },
+    },
+    { upsert: true, new: true },
+  );
+  return result;
 };

@@ -1,10 +1,12 @@
 import express from "express";
 import { validateRequest } from "../../middleware/validateRequest";
 import {
+  courseFacultyValidation,
   validationCourseZodOnCreate,
   validationCourseZodOnUpdate,
 } from "./course.validation";
 import {
+  assignFaculties,
   createCourse,
   deleteCourse,
   getAllCourse,
@@ -35,6 +37,13 @@ router.patch(
   "/:id",
   validateRequest(validationCourseZodOnUpdate),
   updateCourse,
+);
+
+//
+router.put(
+  "/:courseId/faculties",
+  validateRequest(courseFacultyValidation),
+  assignFaculties,
 );
 
 export const courseRoutes = router;
