@@ -25,4 +25,4 @@ export const getSingleSemesterRegistration = catchAsync(async (req) => {
 export const updateSingleSemesterRegistration = catchAsync(async (req) => {
   const { id } = req.params;
   return await updateSingleSemesterRegistrationIntoDB(id, req.body);
-}, "Get single data successfully");
+}, "Update single data successfully");

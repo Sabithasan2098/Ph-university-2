@@ -133,17 +133,34 @@ export const updateSingleSemesterRegistrationIntoDB = async (
   }
 
   // if the semesterRegister was ended don't allow to update
-  const isSemesterRegisterEnded = await SemesterRegistrationModel.findById(id);
-  if (isSemesterRegisterEnded?.status === "ENDED") {
+  const currentSemesterStatus = isSemesterExists?.status;
+  const SemesterStatus = payload.status;
+  if (currentSemesterStatus === "ENDED") {
     throw new appError(
       400,
       `This semester is already ended so that you can't update this ${id}`,
     );
   }
 
+  // semester status update flow--------------------------->
+  // UPCOMING----->ONGOING----->ENDED
+  if (currentSemesterStatus === "UPCOMING" && SemesterStatus === "ENDED") {
+    throw new appError(
+      400,
+      `You can not update status ${currentSemesterStatus} to ${SemesterStatus}`,
+    );
+  }
+  if (currentSemesterStatus === "ONGOING" && SemesterStatus === "UPCOMING") {
+    throw new appError(
+      400,
+      `You can not update status ${currentSemesterStatus} to ${SemesterStatus}`,
+    );
+  }
+
   const result = await SemesterRegistrationModel.findByIdAndUpdate(
     id,
     payload,
+    { new: true, runValidators: true },
   ).populate("academicSemester");
   return result;
 };
