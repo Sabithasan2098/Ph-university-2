@@ -14,6 +14,7 @@ export const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     academicDepartment,
     course,
     faculty,
+    section,
   } = payload;
 
   //   check semesterRegistration exists or not
@@ -29,7 +30,7 @@ export const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const isAcademicFacultyExists =
     await academicFacultyModel.findById(academicFaculty);
   if (!isAcademicFacultyExists) {
-    throw new appError(300, "SemesterRegistration not found");
+    throw new appError(300, "AcademicFaculty not found");
   }
 
   //   check academicDepartment exists or not
@@ -49,6 +50,33 @@ export const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const isFacultyExists = await FacultyModelSchema.findById(faculty);
   if (!isFacultyExists) {
     throw new appError(300, "Faculty not found");
+  }
+
+  // check if the department belong to faculty
+  const isDepartmentBelongToFaculty = await academicDepartmentModel.findOne({
+    _id: academicDepartment,
+    academicFaculty,
+  });
+
+  if (!isDepartmentBelongToFaculty) {
+    throw new appError(
+      400,
+      `This ${isAcademicDepartmentExists.name} didn't exists in this ${isAcademicFacultyExists.name}`,
+    );
+  }
+
+  // check if the same offered course same section in same registered semester exists
+  const isMatchData = await OfferedCourseModel.findOne({
+    semesterRegistration,
+    course,
+    section,
+  });
+
+  if (isMatchData) {
+    throw new appError(
+      400,
+      `Offered course with same section is already exists`,
+    );
   }
 
   const result = await OfferedCourseModel.create({
