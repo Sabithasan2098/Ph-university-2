@@ -15,6 +15,9 @@ export const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     course,
     faculty,
     section,
+    days,
+    startTime,
+    endTime,
   } = payload;
 
   //   check semesterRegistration exists or not
@@ -78,6 +81,18 @@ export const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
       `Offered course with same section is already exists`,
     );
   }
+
+  // check schedule
+  const assignSchedule = await OfferedCourseModel.find({
+    semesterRegistration,
+    faculty,
+  }).select("days startTime endTime");
+
+  const newSchedule = {
+    days,
+    startTime,
+    endTime,
+  };
 
   const result = await OfferedCourseModel.create({
     ...payload,
