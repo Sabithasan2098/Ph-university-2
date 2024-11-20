@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { appError } from "../../error/custom.appError";
 import { academicDepartmentModel } from "../academicDepartment/academicDepartment.model";
 import { academicFacultyModel } from "../academicFaculty/academicFaculty.model";
@@ -257,3 +258,50 @@ export const updateSingleOfferedCourseIntoDB = async (
   return result;
 };
 // --------------------------------------------------//
+// delete offeredCourse------------------------------>
+export const deleteOfferedCourseIntoDB = async (id: string) => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    const offeredCourse =
+      await OfferedCourseModel.findById(id).session(session);
+    if (!offeredCourse) {
+      throw new appError(500, "This offeredCourse is not exists");
+    }
+    // delete-offeredCourse
+    const deleteOfferedCourse = await OfferedCourseModel.findByIdAndDelete(id, {
+      session,
+    });
+    if (!deleteOfferedCourse) {
+      throw new appError(500, "Faield to delete offeredCourse");
+    }
+    // delete semesterRegistration
+    const semesterRegistrationId = offeredCourse?.semesterRegistration;
+    const findSemesterRegistrationData =
+      await SemesterRegistrationModel.findById(semesterRegistrationId).session(
+        session,
+      );
+    const semesterRegistrationStatus = findSemesterRegistrationData?.status;
+    if (semesterRegistrationStatus !== "UPCOMING") {
+      throw new appError(
+        500,
+        `You can't delete semesterRegistration when status ${semesterRegistrationStatus}`,
+      );
+    }
+    await SemesterRegistrationModel.findByIdAndDelete(semesterRegistrationId, {
+      session,
+    });
+
+    await session.commitTransaction();
+    await session.endSession();
+    return deleteOfferedCourse;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new appError(
+      error.statusCode || 500,
+      error.message || "Failed to delete offeredCourse",
+    );
+  }
+};

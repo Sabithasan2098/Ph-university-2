@@ -6,6 +6,7 @@ import {
 } from "./offeredCourse.validation";
 import {
   createOfferedCourse,
+  deleteOfferedCourse,
   getAllOfferedCourse,
   getSingleOfferedCourse,
   updateSingleOfferedCourse,
@@ -26,8 +27,8 @@ router.get("/get-all-offeredCourse-data", getAllOfferedCourse);
 // get a course data--------------------------------->
 router.get("/:id", getSingleOfferedCourse);
 
-// // delete a course data--------------------------------->
-// router.delete("/:id", delete);
+// delete a offeredCourse data--------------------------------->
+router.delete("/:id", deleteOfferedCourse);
 
 // update a semesterRegistration data--------------------------------->
 router.patch(

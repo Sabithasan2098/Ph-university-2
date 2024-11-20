@@ -1,6 +1,7 @@
 import { catchAsync } from "../../utils/catchAsync";
 import {
   createOfferedCourseIntoDB,
+  deleteOfferedCourseIntoDB,
   getAllOfferedCourseIntoDB,
   getSingleOfferedCourseIntoDB,
   updateSingleOfferedCourseIntoDB,
@@ -27,3 +28,9 @@ export const updateSingleOfferedCourse = catchAsync(async (req) => {
   const { id } = req.params;
   return await updateSingleOfferedCourseIntoDB(id, req.body);
 }, "Update offered course data successfully");
+
+//delete offered course-------------------------->
+export const deleteOfferedCourse = catchAsync(async (req) => {
+  const { id } = req.params;
+  return await deleteOfferedCourseIntoDB(id);
+}, "Delete offered course data successfully");
