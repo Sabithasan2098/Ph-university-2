@@ -89,10 +89,24 @@ export const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   }).select("days startTime endTime");
 
   const newSchedule = {
-    days,
+    days: { $in: days },
     startTime,
     endTime,
   };
+
+  assignSchedule.forEach((schedule) => {
+    const existingStartTime = new Date(`1970-01-01T${schedule.startTime}`);
+    const existingEndTime = new Date(`1970-01-01T${schedule.endTime}`);
+    const newStartTime = new Date(`1970-01-01T${newSchedule.startTime}`);
+    const newEndTime = new Date(`1970-01-01T${newSchedule.endTime}`);
+
+    if (newStartTime < existingEndTime && newEndTime > existingStartTime) {
+      throw new appError(
+        400,
+        "This faculty is not available at that time ! chose other time or day",
+      );
+    }
+  });
 
   const result = await OfferedCourseModel.create({
     ...payload,
