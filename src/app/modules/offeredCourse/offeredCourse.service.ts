@@ -109,8 +109,8 @@ export const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   return result;
 };
 
+// -----------------------------------------//
 // get-all-OfferedCourse--------------------->
-
 export const getAllOfferedCourseIntoDB = async (
   query: Record<string, unknown>,
 ) => {
@@ -184,13 +184,25 @@ export const getAllOfferedCourseIntoDB = async (
   }
 };
 
+// --------------------------------------------------//
 // get-single-semesterRegister------------------------>
 export const getSingleOfferedCourseIntoDB = async (id: string) => {
+  // check this offeredCourse exists or not
+  const isOfferedCourseExists = await OfferedCourseModel.findById(id);
+
+  if (!isOfferedCourseExists) {
+    throw new appError(
+      400,
+      "This offered course is not exists in database or invalid id ! check id and try again",
+    );
+  }
+
   const result =
     await OfferedCourseModel.findById(id).populate("academicSemester");
   return result;
 };
 
+// --------------------------------------------------//
 // update-single-offeredCourse------------------------>
 export const updateSingleOfferedCourseIntoDB = async (
   id: string,
@@ -244,3 +256,4 @@ export const updateSingleOfferedCourseIntoDB = async (
   });
   return result;
 };
+// --------------------------------------------------//
