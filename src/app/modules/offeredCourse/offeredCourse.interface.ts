@@ -15,3 +15,9 @@ export type TOfferedCourse = {
   startTime: string;
   endTime: string;
 };
+
+export type TSchedule = {
+  days: Days[] | { $in: Days[] }; // Accepts an array of days or a MongoDB `$in` query object
+  startTime: string;
+  endTime: string;
+};

@@ -6,6 +6,7 @@ import { FacultyModelSchema } from "../faculty/faculty.model";
 import { SemesterRegistrationModel } from "../semesterRegistration/semesterRegistration.model";
 import { TOfferedCourse } from "./offeredCourse.interface";
 import { OfferedCourseModel } from "./offeredCourse.model";
+import { timeConflict } from "./offeredCourse.utils";
 
 export const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const {
@@ -94,19 +95,12 @@ export const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     endTime,
   };
 
-  assignSchedule.forEach((schedule) => {
-    const existingStartTime = new Date(`1970-01-01T${schedule.startTime}`);
-    const existingEndTime = new Date(`1970-01-01T${schedule.endTime}`);
-    const newStartTime = new Date(`1970-01-01T${newSchedule.startTime}`);
-    const newEndTime = new Date(`1970-01-01T${newSchedule.endTime}`);
-
-    if (newStartTime < existingEndTime && newEndTime > existingStartTime) {
-      throw new appError(
-        400,
-        "This faculty is not available at that time ! chose other time or day",
-      );
-    }
-  });
+  if (timeConflict(assignSchedule, newSchedule)) {
+    throw new appError(
+      400,
+      "This faculty is not available at this time! Choose another time or day.",
+    );
+  }
 
   const result = await OfferedCourseModel.create({
     ...payload,
