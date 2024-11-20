@@ -36,32 +36,19 @@ export const offeredCourseValidation = z.object({
 export const offeredCourseValidationOnUpdate = z.object({
   body: z
     .object({
-      maxCapacity: z.number().optional(),
-      section: z.number().optional(),
-      days: z
-        .enum(["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"])
-        .optional(),
-      startTime: z
-        .string()
-        .refine((value) => timeRegex.test(value), {
-          message: "Invalid time format. Use HH:mm.",
-        })
-        .optional(),
-      endTime: z
-        .string()
-        .refine((value) => timeRegex.test(value), {
-          message: "Invalid time format. Use HH:mm.",
-        })
-        .optional(),
+      faculty: z.string(),
+      maxCapacity: z.number(),
+      section: z.number(),
+      days: z.array(z.enum(["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"])),
+      startTime: z.string().refine((value) => timeRegex.test(value), {
+        message: "Invalid time format. Use HH:mm.",
+      }),
+      endTime: z.string().refine((value) => timeRegex.test(value), {
+        message: "Invalid time format. Use HH:mm.",
+      }),
     })
-    .refine(
-      (data) =>
-        !data.startTime ||
-        !data.endTime || // Allow partial updates
-        isStartTimeBeforeEndTime(data.startTime, data.endTime),
-      {
-        message: "Start time must be earlier than end time.",
-        path: ["startTime"], // Error will point to `startTime`
-      },
-    ),
+    .refine((data) => isStartTimeBeforeEndTime(data.startTime, data.endTime), {
+      message: "Start time must be earlier than end time.",
+      path: ["startTime"], // Error will point to `startTime`
+    }),
 });

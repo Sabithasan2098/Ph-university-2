@@ -191,45 +191,56 @@ export const getSingleOfferedCourseIntoDB = async (id: string) => {
   return result;
 };
 
-// update-single-semesterRegister------------------------>
+// update-single-offeredCourse------------------------>
 export const updateSingleOfferedCourseIntoDB = async (
   id: string,
-  payload: Partial<TOfferedCourse>,
+  payload: Pick<TOfferedCourse, "faculty" | "days" | "startTime" | "endTime">,
 ) => {
+  const { faculty, days, startTime, endTime } = payload;
   // check is this data present or not
   const isOfferedCourseExists = await OfferedCourseModel.findById(id);
   if (!isOfferedCourseExists) {
     throw new appError(400, "This offered course is not exists");
   }
+  //   check faculty exists or not
+  const isFacultyExists = await FacultyModelSchema.findById(faculty);
+  if (!isFacultyExists) {
+    throw new appError(300, "Faculty not found");
+  }
 
-  //   // if the semesterRegister was ended don't allow to update
-  //   const currentSemesterStatus = isSemesterExists?.status;
-  //   const SemesterStatus = payload.status;
-  //   if (currentSemesterStatus === "ENDED") {
-  //     throw new appError(
-  //       400,
-  //       `This semester is already ended so that you can't update this ${id}`,
-  //     );
-  //   }
+  // check schedule
+  const semesterRegistration = isOfferedCourseExists.semesterRegistration;
+  const assignSchedule = await OfferedCourseModel.find({
+    semesterRegistration,
+    faculty,
+  }).select("days startTime endTime");
 
-  //   // semester status update flow--------------------------->
-  //   // UPCOMING----->ONGOING----->ENDED
-  //   if (currentSemesterStatus === "UPCOMING" && SemesterStatus === "ENDED") {
-  //     throw new appError(
-  //       400,
-  //       `You can not update status ${currentSemesterStatus} to ${SemesterStatus}`,
-  //     );
-  //   }
-  //   if (currentSemesterStatus === "ONGOING" && SemesterStatus === "UPCOMING") {
-  //     throw new appError(
-  //       400,
-  //       `You can not update status ${currentSemesterStatus} to ${SemesterStatus}`,
-  //     );
-  //   }
+  const newSchedule = {
+    days: { $in: days },
+    startTime,
+    endTime,
+  };
+
+  if (timeConflict(assignSchedule, newSchedule)) {
+    throw new appError(
+      400,
+      "This faculty is not available at this time! Choose another time or day.",
+    );
+  }
+
+  // check semesterRegistration status
+  const semesterRegistrationStatus =
+    await SemesterRegistrationModel.findById(semesterRegistration);
+  if (semesterRegistrationStatus?.status !== "UPCOMING") {
+    throw new appError(
+      400,
+      `You can not update this offered course as it is ${semesterRegistrationStatus?.status}`,
+    );
+  }
 
   const result = await OfferedCourseModel.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
-  }).populate("academicSemester");
+  });
   return result;
 };

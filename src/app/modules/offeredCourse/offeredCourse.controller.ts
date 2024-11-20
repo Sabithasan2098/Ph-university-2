@@ -22,8 +22,8 @@ export const getSingleOfferedCourse = catchAsync(async (req) => {
   return await getSingleOfferedCourseIntoDB(id);
 }, "Get single data successfully");
 
-// get single semesterRegister------------------->
+//update offered course------0------------------->
 export const updateSingleOfferedCourse = catchAsync(async (req) => {
   const { id } = req.params;
   return await updateSingleOfferedCourseIntoDB(id, req.body);
-}, "Update single data successfully");
+}, "Update offered course data successfully");
