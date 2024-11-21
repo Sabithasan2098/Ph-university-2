@@ -1,29 +1,28 @@
 import { appError } from "../../error/custom.appError";
 import { userModelSchema } from "../user/user.model";
 import { TLogin } from "./auth.interface";
-import bcrypt from "bcrypt";
+// import bcrypt from "bcrypt";
 
 export const authLoginService = async (payload: TLogin) => {
   // check user exists or not
-  const isUserExists = await userModelSchema.findOne({ id: payload.id });
-  if (!isUserExists) {
+  const user = await userModelSchema.findOne({ id: payload.id });
+  if (!(await userModelSchema.IsUserExists(payload.id))) {
     throw new appError(400, "This user not found");
   }
-  const isUserDeleted = isUserExists.isDeleted;
-  if (isUserDeleted) {
+  // check user isDeleted
+  if (await userModelSchema.IsUserDeleted(payload.id)) {
     throw new appError(400, "This user is deleted");
   }
-  const isUserBlocked = isUserExists.status;
-  if (isUserBlocked === "blocked") {
+  // check user isBlocked
+  if (await userModelSchema.IsUserBlocked(payload.id)) {
     throw new appError(400, "This user is blocked");
   }
 
-  // check is password match
-  const isPasswordMatch = await bcrypt.compare(
-    payload?.password,
-    isUserExists?.password,
-  );
-  if (!isPasswordMatch) {
+  // // check is password match
+
+  if (
+    !(await userModelSchema.IsPasswordMatch(payload?.password, user?.password))
+  ) {
     throw new appError(400, "Wrong password");
   }
 
