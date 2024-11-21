@@ -1,6 +1,8 @@
+import jwt from "jsonwebtoken";
 import { appError } from "../../error/custom.appError";
 import { userModelSchema } from "../user/user.model";
 import { TLogin } from "./auth.interface";
+import config from "../../config";
 // import bcrypt from "bcrypt";
 
 export const authLoginService = async (payload: TLogin) => {
@@ -25,6 +27,19 @@ export const authLoginService = async (payload: TLogin) => {
   ) {
     throw new appError(400, "Wrong password");
   }
+
+  const jwtPayload = {
+    userId: user,
+    role: user?.role,
+  };
+  const accessToken = jwt.sign(jwtPayload, config.jwt_token as string, {
+    expiresIn: "10d",
+  });
+
+  return {
+    accessToken,
+    changePassword: user?.changePassword,
+  };
 
   console.log(payload);
 };
