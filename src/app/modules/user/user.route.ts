@@ -4,12 +4,15 @@ import { validateRequest } from "../../middleware/validateRequest";
 import { studentValidationSchemaZodOnCreate } from "../students/students.validation";
 import { facultyValidationSchemaZodOnCreate } from "../faculty/faculty.validation";
 import { adminValidationSchemaZodOnCreate } from "../admin/admin.validation";
+import { auth } from "../../middleware/authMiddleware";
+import { USER_ROLE } from "./user.constant";
 
 const router = express.Router();
 
 // post a student data----------------------------------->
 router.post(
   "/create-student",
+  auth(USER_ROLE.admin),
   validateRequest(studentValidationSchemaZodOnCreate),
   createStudent,
 );
