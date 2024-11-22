@@ -29,7 +29,7 @@ export const authLoginService = async (payload: TLogin) => {
   }
 
   const jwtPayload = {
-    userId: user,
+    userId: user?.id,
     role: user?.role,
   };
   const accessToken = jwt.sign(jwtPayload, config.jwt_token as string, {

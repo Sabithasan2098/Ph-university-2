@@ -7,11 +7,12 @@ import {
   getASingleFaculty,
   updateFaculty,
 } from "./faculty.controller";
+import { auth } from "../../middleware/authMiddleware";
 
 const router = express.Router();
 
 // get faculty--------------->
-router.get("/get-all-faculty", getAllFaculty);
+router.get("/get-all-faculty", auth(), getAllFaculty);
 
 // get a faculty--------------->
 router.get("/:facultyId", getASingleFaculty);
