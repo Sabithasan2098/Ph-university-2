@@ -7,7 +7,6 @@ export const authLogin = catchAsync(async (req) => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const changePassword = catchAsync(async (req: any) => {
-  const user = req.user;
   const { ...password } = req.body;
-  return await changePasswordIntoDB(user, password);
+  return await changePasswordIntoDB(req.user, password);
 }, "Login confirm");

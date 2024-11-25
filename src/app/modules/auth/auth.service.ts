@@ -1,9 +1,9 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { appError } from "../../error/custom.appError";
 import { userModelSchema } from "../user/user.model";
-import { TLogin } from "./auth.interface";
+import { TChangePassword, TLogin } from "./auth.interface";
 import config from "../../config";
-// import bcrypt from "bcrypt";
+import bcrypt from "bcrypt";
 
 export const authLoginService = async (payload: TLogin) => {
   // check user exists or not
@@ -45,12 +45,50 @@ export const authLoginService = async (payload: TLogin) => {
 };
 
 export const changePasswordIntoDB = async (
-  user: { userId: string; role: string },
-  payload,
+  userData: JwtPayload,
+  payload: TChangePassword,
 ) => {
-  const result = await userModelSchema.findOneAndUpdate({
-    id: user.userId,
-    role: user.role,
-  });
-  return result;
+  // check user exists or not
+  const user = await userModelSchema.IsUserExists(userData.userId);
+
+  if (!user) {
+    throw new appError(400, "This user not found");
+  }
+  // check user isDeleted
+  if (await userModelSchema.IsUserDeleted(user.id)) {
+    throw new appError(400, "This user is deleted");
+  }
+  // check user isBlocked
+  if (await userModelSchema.IsUserBlocked(user.id)) {
+    throw new appError(400, "This user is blocked");
+  }
+
+  // Check if the old password matches
+  const isPasswordMatch = await userModelSchema.IsPasswordMatch(
+    payload.oldPassword,
+    user.password,
+  );
+  if (!isPasswordMatch) {
+    throw new appError(400, "Old password is wrong which you provided");
+  }
+
+  // hash the new password
+  const hashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcryptSalt),
+  );
+
+  // Update the password in the database
+  await userModelSchema.findOneAndUpdate(
+    {
+      id: userData.userId,
+    },
+    {
+      password: hashedPassword,
+      changePassword: false,
+      passwordChangeAt: new Date(),
+    },
+  );
+
+  return "Password was updated successfully";
 };
