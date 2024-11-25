@@ -60,7 +60,7 @@ userSchema.post("save", function (doc, next) {
 // use static method and add some logic-------------------->
 // isUserExists
 userSchema.statics.IsUserExists = async function (id: string) {
-  return await this.findOne({ id });
+  return await this.findOne({ id }).select("+password");
 };
 // check isUserDeleted
 userSchema.statics.IsUserDeleted = async function (id: string) {

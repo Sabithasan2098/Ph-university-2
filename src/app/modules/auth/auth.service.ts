@@ -7,7 +7,9 @@ import config from "../../config";
 
 export const authLoginService = async (payload: TLogin) => {
   // check user exists or not
-  const user = await userModelSchema.findOne({ id: payload.id });
+  const user = await userModelSchema
+    .findOne({ id: payload.id })
+    .select("+password");
   if (!(await userModelSchema.IsUserExists(payload.id))) {
     throw new appError(400, "This user not found");
   }
@@ -40,6 +42,15 @@ export const authLoginService = async (payload: TLogin) => {
     accessToken,
     changePassword: user?.changePassword,
   };
+};
 
-  console.log(payload);
+export const changePasswordIntoDB = async (
+  user: { userId: string; role: string },
+  payload,
+) => {
+  const result = await userModelSchema.findOneAndUpdate({
+    id: user.userId,
+    role: user.role,
+  });
+  return result;
 };
