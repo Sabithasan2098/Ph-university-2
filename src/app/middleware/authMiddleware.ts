@@ -17,7 +17,7 @@ export const auth = (...requiredRoles: TUserRole[]) => {
         config.jwt_token as string,
       ) as JwtPayload;
 
-      const { role, userId } = decoded;
+      const { role, userId, iat } = decoded;
 
       // check user exists or not
       const user = await userModelSchema.IsUserExists(userId);
@@ -34,8 +34,17 @@ export const auth = (...requiredRoles: TUserRole[]) => {
         throw new appError(400, "This user is blocked");
       }
 
-      // Check required roles
+      if (
+        user.passwordChangeAt &&
+        userModelSchema.isJWTIssuedBeforePasswordChanged(
+          user.passwordChangeAt,
+          iat as number,
+        )
+      ) {
+        throw new appError(401, "You are not authorized user 😎😎😎😎😎");
+      }
       if (requiredRoles.length > 0 && !requiredRoles.includes(role)) {
+        // Check required roles
         throw new appError(403, "You do not have the necessary permissions");
       }
 

@@ -78,6 +78,15 @@ userSchema.statics.IsUserBlocked = async function (id: string) {
   const user = await this.findOne({ id }).select("status");
   return user?.status === "blocked";
 };
+
+// check change password time if changePassword then the token will refresh
+userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
+  passwordChangeTimestamp: Date,
+  JWTIssuedTimestamp: number,
+) {
+  const passwordChangeTime = new Date(passwordChangeTimestamp).getTime() / 1000;
+  return passwordChangeTime > JWTIssuedTimestamp;
+};
 // check password
 userSchema.statics.IsPasswordMatch = async function (
   plainTextPassword,
