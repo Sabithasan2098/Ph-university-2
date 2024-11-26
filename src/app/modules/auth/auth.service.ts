@@ -34,12 +34,22 @@ export const authLoginService = async (payload: TLogin) => {
     userId: user?.id,
     role: user?.role,
   };
+  // accessToken
   const accessToken = jwt.sign(jwtPayload, config.jwt_token as string, {
-    expiresIn: "10d",
+    expiresIn: config.jwt_access_expire,
   });
+  // refresh token
+  const refreshToken = jwt.sign(
+    jwtPayload,
+    config.jwt_refresh_token as string,
+    {
+      expiresIn: config.jwt_refresh_expire,
+    },
+  );
 
   return {
     accessToken,
+    refreshToken,
     changePassword: user?.changePassword,
   };
 };
