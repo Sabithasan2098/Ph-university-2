@@ -9,7 +9,8 @@ import {
 } from "./faculty.service";
 
 // get-faculty--------------------------->
-export const getAllFaculty = catchAsync(async () => {
+export const getAllFaculty = catchAsync(async (req) => {
+  console.log(req.cookies);
   return await getAllFacultyIntoDB();
 }, "Get all faculty successful");
 
