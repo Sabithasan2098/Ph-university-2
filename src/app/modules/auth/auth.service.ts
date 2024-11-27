@@ -102,3 +102,51 @@ export const changePasswordIntoDB = async (
 
   return "Password was updated successfully";
 };
+
+export const refreshTokenService = async (token: string) => {
+  if (!token) {
+    throw new appError(401, "You are not authorized user");
+  }
+  const decoded = jwt.verify(
+    token,
+    config.jwt_refresh_token as string,
+  ) as JwtPayload;
+
+  const { userId, iat } = decoded;
+
+  // check user exists or not
+  const user = await userModelSchema.IsUserExists(userId);
+
+  if (!user) {
+    throw new appError(400, "This user not found");
+  }
+  // check user isDeleted
+  if (await userModelSchema.IsUserDeleted(user.id)) {
+    throw new appError(400, "This user is deleted");
+  }
+  // check user isBlocked
+  if (await userModelSchema.IsUserBlocked(user.id)) {
+    throw new appError(400, "This user is blocked");
+  }
+
+  if (
+    user.passwordChangeAt &&
+    userModelSchema.isJWTIssuedBeforePasswordChanged(
+      user.passwordChangeAt,
+      iat as number,
+    )
+  ) {
+    throw new appError(401, "You are not authorized user 😎😎😎😎😎");
+  }
+  const jwtPayload = {
+    userId: user?.id,
+    role: user?.role,
+  };
+  // accessToken
+  const newAccessToken = jwt.sign(jwtPayload, config.jwt_token as string, {
+    expiresIn: config.jwt_access_expire,
+  });
+  return {
+    newAccessToken,
+  };
+};

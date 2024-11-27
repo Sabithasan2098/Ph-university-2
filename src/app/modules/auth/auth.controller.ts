@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
-import { authLoginService, changePasswordIntoDB } from "./auth.service";
+import {
+  authLoginService,
+  changePasswordIntoDB,
+  refreshTokenService,
+} from "./auth.service";
 import config from "../../config";
 
 // Token cookie te set korar jonno purano style e controller banano laglo
@@ -35,3 +39,8 @@ export const changePassword = catchAsync(async (req: any) => {
   const { ...password } = req.body;
   return await changePasswordIntoDB(req.user, password);
 }, "Login confirm");
+
+export const refreshToken = catchAsync(async (req) => {
+  const { refreshToken } = req.cookies;
+  return await refreshTokenService(refreshToken);
+}, "Got access token successfully");
