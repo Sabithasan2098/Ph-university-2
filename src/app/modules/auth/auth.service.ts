@@ -150,3 +150,35 @@ export const refreshTokenService = async (token: string) => {
     newAccessToken,
   };
 };
+
+// forget password----------->
+export const forgetPasswordService = async (id: string) => {
+  // check user exists or not
+  const user = await userModelSchema.IsUserExists(id);
+
+  if (!user) {
+    throw new appError(400, "This user not found");
+  }
+  // check user isDeleted
+  if (await userModelSchema.IsUserDeleted(user.id)) {
+    throw new appError(400, "This user is deleted");
+  }
+  // check user isBlocked
+  if (await userModelSchema.IsUserBlocked(user.id)) {
+    throw new appError(400, "This user is blocked");
+  }
+
+  // create a token for reset password
+  const jwtPayload = {
+    userId: user?.id,
+    role: user?.role,
+  };
+  // accessToken
+  const accessToken = jwt.sign(jwtPayload, config.jwt_token as string, {
+    expiresIn: "10m",
+  });
+
+  // create a reset password ui link
+  const resetPasswordUILink = `http://localhost:3000?id=${user.id}&token=${accessToken}`;
+  console.log(resetPasswordUILink);
+};

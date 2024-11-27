@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import {
   authLoginService,
   changePasswordIntoDB,
+  forgetPasswordService,
   refreshTokenService,
 } from "./auth.service";
 import config from "../../config";
@@ -44,3 +45,8 @@ export const refreshToken = catchAsync(async (req) => {
   const { refreshToken } = req.cookies;
   return await refreshTokenService(refreshToken);
 }, "Got access token successfully");
+
+export const forgetPassword = catchAsync(async (req) => {
+  const userId = req.body.id;
+  return await forgetPasswordService(userId);
+}, "Reset route generated successfully");

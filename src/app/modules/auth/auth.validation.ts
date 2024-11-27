@@ -21,3 +21,9 @@ export const authTokenValidation = z.object({
     }),
   }),
 });
+
+export const forgetPasswordValidation = z.object({
+  body: z.object({
+    id: z.string({ required_error: "Id is required" }),
+  }),
+});
