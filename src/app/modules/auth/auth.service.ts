@@ -4,6 +4,7 @@ import { userModelSchema } from "../user/user.model";
 import { TChangePassword, TLogin } from "./auth.interface";
 import config from "../../config";
 import bcrypt from "bcrypt";
+import { sendMail } from "../../utils/sendEmail";
 
 export const authLoginService = async (payload: TLogin) => {
   // check user exists or not
@@ -179,6 +180,8 @@ export const forgetPasswordService = async (id: string) => {
   });
 
   // create a reset password ui link
-  const resetPasswordUILink = `http://localhost:3000?id=${user.id}&token=${resetToken}`;
+  const resetPasswordUILink = `${config.RESET_PASSWORD_UI_LINK}?id=${user.id}&token=${resetToken}`;
   console.log(resetPasswordUILink);
+
+  sendMail(user.email, resetPasswordUILink);
 };
