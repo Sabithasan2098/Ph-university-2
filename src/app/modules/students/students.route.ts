@@ -7,6 +7,7 @@ import {
 } from "./students.controller";
 import { validateRequest } from "../../middleware/validateRequest";
 import { studentValidationSchemaZodOnUpdate } from "./students.validation";
+import { auth } from "../../middleware/authMiddleware";
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ const router = express.Router();
 router.get("/get-all-students-data", getAllStudents);
 
 // get a students data--------------------------------->
-router.get("/:studentId", getAStudent);
+router.get("/:studentId", auth("admin"), getAStudent);
 
 // update a students data--------------------------------->
 router.patch(

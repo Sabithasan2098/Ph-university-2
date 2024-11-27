@@ -14,18 +14,24 @@ import {
   removeFaculties,
   updateCourse,
 } from "./course.controller";
+import { auth } from "../../middleware/authMiddleware";
 
 const router = express.Router();
 
 // create course------------------------------->
 router.post(
   "/create-course",
+  auth("admin"),
   validateRequest(validationCourseZodOnCreate),
   createCourse,
 );
 
 // get all course data--------------------------------->
-router.get("/get-all-course-data", getAllCourse);
+router.get(
+  "/get-all-course-data",
+  auth("admin", "faculty", "student"),
+  getAllCourse,
+);
 
 // get a course data--------------------------------->
 router.get("/:id", getSingleCourse);
@@ -36,6 +42,7 @@ router.delete("/:id", deleteCourse);
 // update a course data--------------------------------->
 router.patch(
   "/:id",
+  auth("admin"),
   validateRequest(validationCourseZodOnUpdate),
   updateCourse,
 );
@@ -50,6 +57,7 @@ router.put(
 // remove faculties into course--------------------------->
 router.delete(
   "/:courseId/remove-faculties",
+  auth("admin"),
   validateRequest(courseFacultyValidation),
   removeFaculties,
 );
