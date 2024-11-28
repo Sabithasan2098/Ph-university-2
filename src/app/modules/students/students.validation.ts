@@ -68,7 +68,8 @@ export const studentValidationSchemaZodOnCreate = z.object({
     password: z
       .string()
       .min(8, { message: "Password must be contain at lest 8 character" })
-      .max(20, "Don't contain password more than 20"),
+      .max(20, "Don't contain password more than 20")
+      .optional(),
     student: z.object({
       name: userNameValidationSchema,
       email: z
@@ -101,7 +102,7 @@ export const studentValidationSchemaZodOnCreate = z.object({
         .min(1, { message: "Permanent address must not be empty" }),
       guardians: guardianValidationSchema,
       localGuardians: localGuardianValidationSchema,
-      profilePicture: z.string().trim().optional(),
+      // profilePicture: z.string().trim().optional(),
       admissionSemester: z.string(),
       academicDepartment: z.string(),
     }),

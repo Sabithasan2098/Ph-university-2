@@ -16,10 +16,13 @@ import { FacultyModelSchema } from "../faculty/faculty.model";
 import { academicDepartmentModel } from "../academicDepartment/academicDepartment.model";
 import { TAdmin } from "../admin/admin.interface";
 import { AdminModelSchema } from "../admin/admin.model";
+import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 // import jwt, { JwtPayload } from "jsonwebtoken";
 
 // create a student------------------------------------->
 export const createStudentIntoDB = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  file: any,
   password: string,
   payload: TStudent,
 ) => {
@@ -48,6 +51,8 @@ export const createStudentIntoDB = async (
     } else {
       throw new Error("Create admissionSemester first");
     }
+    // send image to cloudinary------------------->
+    sendImageToCloudinary();
 
     // create a user (transaction-1)
     const newUser = await userModelSchema.create([userData], {

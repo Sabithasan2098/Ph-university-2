@@ -2,7 +2,7 @@ import {
   changeStatusService,
   createAdminIntoDB,
   createFacultyIntoDB,
-  createStudentIntoDB,
+  // createStudentIntoDB,
   getMeService,
 } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
@@ -11,8 +11,10 @@ import { catchAsync } from "../../utils/catchAsync";
 
 //create a student--------------------------------->
 export const createStudent = catchAsync(async (req) => {
-  const { password, student: studentData } = req.body;
-  return createStudentIntoDB(password, studentData);
+  console.log("file", req.file);
+  console.log("body", req.body);
+  // const { password, student: studentData } = req.body;
+  // return createStudentIntoDB(password, studentData);
 }, "Create student successfully");
 
 // create-faculty------------------------>
