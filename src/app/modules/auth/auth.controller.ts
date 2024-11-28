@@ -5,6 +5,7 @@ import {
   changePasswordIntoDB,
   forgetPasswordService,
   refreshTokenService,
+  resetPasswordService,
 } from "./auth.service";
 import config from "../../config";
 
@@ -50,3 +51,9 @@ export const forgetPassword = catchAsync(async (req) => {
   const userId = req.body.id;
   return await forgetPasswordService(userId);
 }, "Reset route generated successfully");
+
+// reset password------------------------->
+export const resetPassword = catchAsync(async (req) => {
+  const token = req.headers.authorization;
+  return await resetPasswordService(req.body, token as string);
+}, "Password reset successfully");

@@ -5,12 +5,14 @@ import {
   authTokenValidation,
   changePasswordValidation,
   forgetPasswordValidation,
+  resetPasswordValidation,
 } from "./auth.validation";
 import {
   authLogin,
   changePassword,
   forgetPassword,
   refreshToken,
+  resetPassword,
 } from "./auth.controller";
 import { USER_ROLE } from "../user/user.constant";
 import { auth } from "../../middleware/authMiddleware";
@@ -36,6 +38,12 @@ router.post(
   "/forgetPassword",
   validateRequest(forgetPasswordValidation),
   forgetPassword,
+);
+// reset password------------------------>
+router.post(
+  "/resetPassword",
+  validateRequest(resetPasswordValidation),
+  resetPassword,
 );
 
 export const authRoutes = router;

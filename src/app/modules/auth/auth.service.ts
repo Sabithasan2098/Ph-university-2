@@ -185,3 +185,50 @@ export const forgetPasswordService = async (id: string) => {
 
   sendMail(user.email, resetPasswordUILink);
 };
+
+// reset password---------------------------------------------------------------------------------->
+export const resetPasswordService = async (
+  payload: { id: string; newPassword: string },
+  token: string,
+) => {
+  // check user exists or not
+  const user = await userModelSchema.IsUserExists(payload?.id);
+
+  if (!user) {
+    throw new appError(400, "This user not found");
+  }
+  // check user isDeleted
+  if (await userModelSchema.IsUserDeleted(user.id)) {
+    throw new appError(400, "This user is deleted");
+  }
+  // check user isBlocked
+  if (await userModelSchema.IsUserBlocked(user.id)) {
+    throw new appError(400, "This user is blocked");
+  }
+
+  // verify token
+  const decoded = jwt.verify(token, config.jwt_token as string) as JwtPayload;
+  if (payload.id !== decoded.userId) {
+    throw new appError(401, "You are not authorized user");
+  }
+  // hash the new password
+  const hashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcryptSalt),
+  );
+
+  // Update the password in the database
+  await userModelSchema.findOneAndUpdate(
+    {
+      id: decoded.userId,
+      role: decoded.role,
+    },
+    {
+      password: hashedPassword,
+      changePassword: false,
+      passwordChangeAt: new Date(),
+    },
+  );
+};
+
+// --------------------------------------------------------------------------------------------//
