@@ -2,8 +2,10 @@ import {
   createAdminIntoDB,
   createFacultyIntoDB,
   createStudentIntoDB,
+  getMeService,
 } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
+import { appError } from "../../error/custom.appError";
 
 /*use higher order function*/
 
@@ -24,3 +26,12 @@ export const createAdmin = catchAsync(async (req) => {
   const { password, admin: adminData } = req.body;
   return await createAdminIntoDB(password, adminData);
 }, "Create admin successfully");
+
+// get-me--------------------------------->
+export const getMe = catchAsync(async (req) => {
+  const token = req.headers?.authorization;
+  if (!token) {
+    throw new appError(400, "Token not found");
+  }
+  return await getMeService(token as string);
+}, "Get your data successfully");

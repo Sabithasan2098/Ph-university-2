@@ -1,5 +1,10 @@
 import express from "express";
-import { createAdmin, createFaculty, createStudent } from "./user.controller";
+import {
+  createAdmin,
+  createFaculty,
+  createStudent,
+  getMe,
+} from "./user.controller";
 import { validateRequest } from "../../middleware/validateRequest";
 import { studentValidationSchemaZodOnCreate } from "../students/students.validation";
 import { facultyValidationSchemaZodOnCreate } from "../faculty/faculty.validation";
@@ -30,4 +35,7 @@ router.post(
   validateRequest(adminValidationSchemaZodOnCreate),
   createAdmin,
 );
+
+// get your own data------------------->
+router.get("/me", auth("admin", "student", "faculty"), getMe);
 export const usersRoutes = router;
