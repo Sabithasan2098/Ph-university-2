@@ -205,3 +205,11 @@ export const getMeService = async (userId: string, role: string) => {
   }
   return result;
 };
+
+// change user status------------------------------------------>
+export const changeStatusService = async (
+  id: string,
+  data: { status: string },
+) => {
+  return await userModelSchema.findByIdAndUpdate(id, data, { new: true });
+};

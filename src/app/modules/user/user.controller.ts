@@ -1,4 +1,5 @@
 import {
+  changeStatusService,
   createAdminIntoDB,
   createFacultyIntoDB,
   createStudentIntoDB,
@@ -32,3 +33,10 @@ export const getMe = catchAsync(async (req: any) => {
   const { userId, role } = req.user;
   return await getMeService(userId, role);
 }, "Get your data successfully");
+
+// change user status-------------------------->
+export const changeUserStatus = catchAsync(async (req) => {
+  const id = req.params.id;
+  const data = req.body;
+  return await changeStatusService(id, data);
+}, "Successfully change user status");

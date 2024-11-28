@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  changeUserStatus,
   createAdmin,
   createFaculty,
   createStudent,
@@ -11,6 +12,7 @@ import { facultyValidationSchemaZodOnCreate } from "../faculty/faculty.validatio
 import { adminValidationSchemaZodOnCreate } from "../admin/admin.validation";
 import { auth } from "../../middleware/authMiddleware";
 import { USER_ROLE } from "./user.constant";
+import { changeStatusValidation } from "./user.validation";
 
 const router = express.Router();
 
@@ -38,4 +40,13 @@ router.post(
 
 // get your own data------------------->
 router.get("/me", auth("admin", "student", "faculty"), getMe);
+
+// change user status------------------->
+router.patch(
+  "/change-user-status/:id",
+  auth("admin"),
+  validateRequest(changeStatusValidation),
+  changeUserStatus,
+);
+
 export const usersRoutes = router;
