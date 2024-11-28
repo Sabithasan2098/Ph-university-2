@@ -16,7 +16,7 @@ import { FacultyModelSchema } from "../faculty/faculty.model";
 import { academicDepartmentModel } from "../academicDepartment/academicDepartment.model";
 import { TAdmin } from "../admin/admin.interface";
 import { AdminModelSchema } from "../admin/admin.model";
-import jwt, { JwtPayload } from "jsonwebtoken";
+// import jwt, { JwtPayload } from "jsonwebtoken";
 
 // create a student------------------------------------->
 export const createStudentIntoDB = async (
@@ -190,19 +190,18 @@ export const createAdminIntoDB = async (password: string, payload: TAdmin) => {
 };
 
 // get-me------------------------------------------------------->
-export const getMeService = async (token: string) => {
-  const decoded = jwt.verify(token, config.jwt_token as string) as JwtPayload;
-  console.log(decoded);
-  const { role, userId } = decoded;
-
+export const getMeService = async (userId: string, role: string) => {
+  // const decoded = jwt.verify(token, config.jwt_token as string) as JwtPayload;
+  // console.log(decoded);
+  // const { role, userId } = decoded;
   let result = null;
 
   if (role === "admin") {
-    result = await AdminModelSchema.findOne({ id: userId });
+    result = await AdminModelSchema.findOne({ id: userId }).populate("user");
   } else if (role === "faculty") {
-    result = await FacultyModelSchema.findOne({ id: userId });
+    result = await FacultyModelSchema.findOne({ id: userId }).populate("user");
   } else if (role === "student") {
-    result = await StudentModelSchema.findOne({ id: userId });
+    result = await StudentModelSchema.findOne({ id: userId }).populate("user");
   }
   return result;
 };

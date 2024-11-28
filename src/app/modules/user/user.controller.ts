@@ -5,7 +5,6 @@ import {
   getMeService,
 } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
-import { appError } from "../../error/custom.appError";
 
 /*use higher order function*/
 
@@ -28,10 +27,8 @@ export const createAdmin = catchAsync(async (req) => {
 }, "Create admin successfully");
 
 // get-me--------------------------------->
-export const getMe = catchAsync(async (req) => {
-  const token = req.headers?.authorization;
-  if (!token) {
-    throw new appError(400, "Token not found");
-  }
-  return await getMeService(token as string);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getMe = catchAsync(async (req: any) => {
+  const { userId, role } = req.user;
+  return await getMeService(userId, role);
 }, "Get your data successfully");
