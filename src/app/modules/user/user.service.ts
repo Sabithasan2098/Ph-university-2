@@ -21,10 +21,10 @@ import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 
 // create a student------------------------------------->
 export const createStudentIntoDB = async (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  file: any,
   password: string,
   payload: TStudent,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ImgFile: any,
 ) => {
   // create a user obj
   const userData: Partial<TUser> = {};
@@ -52,9 +52,13 @@ export const createStudentIntoDB = async (
       throw new Error("Create admissionSemester first");
     }
     // send image to cloudinary------------------->
-    sendImageToCloudinary();
-
+    const imageName = `${userData.id}${payload?.name?.firstName}`;
+    const path = ImgFile.path;
+    const profileImg = await sendImageToCloudinary(imageName, path);
+    const { secure_url } = profileImg;
+    // --------------------------------------------//
     // create a user (transaction-1)
+    console.log({ userData });
     const newUser = await userModelSchema.create([userData], {
       session,
     }); /*session pathan*/ /*transaction ert jonno [ ] er babohar kora hoice*/
@@ -66,6 +70,7 @@ export const createStudentIntoDB = async (
     // add id and _id
     payload.id = newUser[0].id; //embedding id
     payload.user = newUser[0]._id; //referencing id
+    payload.profilePicture = secure_url;
 
     // create student transaction-2
 
