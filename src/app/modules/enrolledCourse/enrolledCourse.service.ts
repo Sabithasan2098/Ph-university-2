@@ -4,6 +4,7 @@ import { OfferedCourseModel } from "../offeredCourse/offeredCourse.model";
 import { StudentModelSchema } from "../students/students.model";
 import { TEnrolledCourse } from "./enrolledCourse.interface";
 import { EnrolledCourseModel } from "./enrolledCourse.model";
+import { SemesterRegistrationModel } from "../semesterRegistration/semesterRegistration.model";
 
 export const createEnrolledCourseIntoDB = async (
   userId: string,
@@ -40,6 +41,20 @@ export const createEnrolledCourseIntoDB = async (
   if (isOfferedCourseExists.maxCapacity <= 0) {
     throw new appError(400, "Room is full");
   }
+
+  // check total credit exceed maxCredit
+  const semesterRegistration = await SemesterRegistrationModel.findById(
+    isOfferedCourseExists.semesterRegistration,
+    { maxCredit: 1 },
+  );
+  const enrolledCourses = await EnrolledCourseModel.aggregate([
+    {
+      $match: {
+        semesterRegistration: isOfferedCourseExists.semesterRegistration,
+        studentId,
+      },
+    },
+  ]);
 
   const session = await mongoose.startSession();
   try {
