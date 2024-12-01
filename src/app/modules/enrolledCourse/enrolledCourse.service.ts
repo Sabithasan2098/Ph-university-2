@@ -5,6 +5,7 @@ import { StudentModelSchema } from "../students/students.model";
 import { TEnrolledCourse } from "./enrolledCourse.interface";
 import { EnrolledCourseModel } from "./enrolledCourse.model";
 import { SemesterRegistrationModel } from "../semesterRegistration/semesterRegistration.model";
+import { CourseModel } from "../courses/course.model";
 
 export const createEnrolledCourseIntoDB = async (
   userId: string,
@@ -29,8 +30,8 @@ export const createEnrolledCourseIntoDB = async (
   // check is the student already enrolled
   const isStudentAlreadyEnrolled = await EnrolledCourseModel.findOne({
     semesterRegistration: isOfferedCourseExists?.semesterRegistration,
-    offeredCourse,
-    studentId,
+    offeredCourse: offeredCourse,
+    student: studentId,
   });
 
   if (isStudentAlreadyEnrolled) {
@@ -47,14 +48,54 @@ export const createEnrolledCourseIntoDB = async (
     isOfferedCourseExists.semesterRegistration,
     { maxCredit: 1 },
   );
+
   const enrolledCourses = await EnrolledCourseModel.aggregate([
     {
       $match: {
         semesterRegistration: isOfferedCourseExists.semesterRegistration,
-        studentId,
+        student: studentId,
+      },
+    },
+    {
+      $lookup: {
+        from: "courses",
+        localField: "course",
+        foreignField: "_id",
+        as: "enrolledCourse",
+      },
+    },
+    {
+      $unwind: "$enrolledCourse",
+    },
+    {
+      $group: {
+        _id: null,
+        totalEnrolledCredits: { $sum: "$enrolledCourse.credits" },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        totalEnrolledCredits: 1,
       },
     },
   ]);
+
+  // total enrolled credits + new enroll course credit > semesterRegistration.maxCredit
+  const totalCredits =
+    enrolledCourses.length > 0 ? enrolledCourses[0]?.totalEnrolledCredits : 0;
+
+  const course = await CourseModel.findById(isOfferedCourseExists.course, {
+    credits: 1,
+  });
+
+  if (
+    totalCredits &&
+    semesterRegistration?.maxCredit &&
+    totalCredits + course?.credits > semesterRegistration?.maxCredit
+  ) {
+    throw new appError(400, "You have exceed maximum number of credits");
+  }
 
   const session = await mongoose.startSession();
   try {
