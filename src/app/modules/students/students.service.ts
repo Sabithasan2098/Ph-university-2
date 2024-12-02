@@ -70,6 +70,12 @@ export const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   excludeFields.forEach((el) => delete queryObj[el]);
   // --------------------------------------->
 
+  // **(১) মোট রেজাল্ট সংখ্যা বের করা**
+  const totalResult = await StudentModelSchema.countDocuments({
+    $and: [{ $or: searchQuery }, queryObj],
+  });
+  // **মূল ডেটা রিটার্ন করা**
+
   const result = await StudentModelSchema.find({
     $and: [{ $or: searchQuery }, queryObj],
   })
@@ -78,7 +84,21 @@ export const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
     .skip(skip)
     .limit(limit)
     .populate("admissionSemester");
-  return result;
+
+  // **(২) মেটা ডেটা তৈরি করা**
+  const totalPages = Math.ceil(totalResult / limit);
+
+  // **(৩) রেসপন্স স্ট্রাকচার পরিবর্তন**
+
+  return {
+    meta: {
+      page,
+      limit,
+      totalResult,
+      totalPages,
+    },
+    data: result,
+  };
 };
 
 // get a single student data---------------------------->
