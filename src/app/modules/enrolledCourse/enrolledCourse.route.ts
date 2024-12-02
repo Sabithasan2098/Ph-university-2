@@ -6,6 +6,7 @@ import {
 } from "./enrolledCourse.validation";
 import {
   createEnrolledCourse,
+  getAllEnrolledCourses,
   updateEnrolledCourseMarks,
 } from "./enrolledCourse.controller";
 import { auth } from "../../middleware/authMiddleware";
@@ -24,6 +25,13 @@ router.patch(
   auth("faculty"),
   validateRequest(updateEnrolledCourseMarksValidation),
   updateEnrolledCourseMarks,
+);
+
+// get all enrolled courses
+router.get(
+  "/get-all-enrolledCourses",
+  auth("admin", "faculty"),
+  getAllEnrolledCourses,
 );
 
 export const enrolledCourseRoutes = router;

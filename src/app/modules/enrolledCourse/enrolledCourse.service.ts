@@ -8,6 +8,7 @@ import { SemesterRegistrationModel } from "../semesterRegistration/semesterRegis
 import { CourseModel } from "../courses/course.model";
 import { FacultyModelSchema } from "../faculty/faculty.model";
 import { gradePoints } from "./enrolledCourse.utills";
+import { handleQuery } from "../../utils/handleQuery";
 
 export const createEnrolledCourseIntoDB = async (
   userId: string,
@@ -219,4 +220,19 @@ export const updateEnrolledCourseMarksService = async (
   );
   return result;
   // ------------------------------------------------------//
+};
+
+// get all enrolled courses
+export const getAllEnrolledCoursesIntoDB = async (
+  query: Record<string, unknown>,
+) => {
+  const searchAbleField = [
+    "isCompleted",
+    "gradePoints",
+    "grade",
+    "courseMarks",
+    "isEnrolled",
+  ];
+
+  return await handleQuery(EnrolledCourseModel, query, searchAbleField);
 };
