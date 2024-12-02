@@ -7,6 +7,7 @@ import { EnrolledCourseModel } from "./enrolledCourse.model";
 import { SemesterRegistrationModel } from "../semesterRegistration/semesterRegistration.model";
 import { CourseModel } from "../courses/course.model";
 import { FacultyModelSchema } from "../faculty/faculty.model";
+import { gradePoints } from "./enrolledCourse.utills";
 
 export const createEnrolledCourseIntoDB = async (
   userId: string,
@@ -189,6 +190,22 @@ export const updateEnrolledCourseMarksService = async (
 
   // Now dynamically update course marks------------------->
   const modifiedData: Record<string, unknown> = { ...courseMarks };
+
+  // auto calculate course marks for grade and grade points
+  if (courseMarks?.finalTerm) {
+    const { classTest, classTest2, finalTerm, midTerm } =
+      isFacultyBelongToCourse.courseMarks;
+    const totalMarks =
+      Math.ceil(classTest * 0.1) +
+      Math.ceil(classTest2 * 0.1) +
+      Math.ceil(midTerm * 0.3) +
+      Math.ceil(finalTerm * 0.5);
+    // calculate grade points func
+    const result = gradePoints(totalMarks);
+    modifiedData.grade = result.grade;
+    modifiedData.gradePoints = result.gradePoints;
+    modifiedData.isCompleted = true;
+  }
 
   if (courseMarks && Object.keys(courseMarks).length) {
     for (const [keys, value] of Object.entries(courseMarks)) {
