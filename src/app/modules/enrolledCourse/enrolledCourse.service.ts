@@ -6,6 +6,7 @@ import { TEnrolledCourse } from "./enrolledCourse.interface";
 import { EnrolledCourseModel } from "./enrolledCourse.model";
 import { SemesterRegistrationModel } from "../semesterRegistration/semesterRegistration.model";
 import { CourseModel } from "../courses/course.model";
+import { FacultyModelSchema } from "../faculty/faculty.model";
 
 export const createEnrolledCourseIntoDB = async (
   userId: string,
@@ -140,4 +141,65 @@ export const createEnrolledCourseIntoDB = async (
     await session.endSession();
     throw new Error(error);
   }
+};
+
+export const updateEnrolledCourseMarksService = async (
+  payload: Partial<TEnrolledCourse>,
+  faculty: string,
+) => {
+  const { semesterRegistration, offeredCourse, student, courseMarks } = payload;
+
+  // check is semesterRegistration exists
+  const isSemesterRegistration =
+    await SemesterRegistrationModel.findById(semesterRegistration);
+
+  if (!isSemesterRegistration) {
+    throw new appError(400, "This semester registration does not exists");
+  }
+
+  // check is offeredCourse exists
+  const isOfferedCourseExists =
+    await OfferedCourseModel.findById(offeredCourse);
+
+  if (!isOfferedCourseExists) {
+    throw new appError(400, "This offered course is not exists");
+  }
+
+  // check is student exists
+  const isStudentExists = await StudentModelSchema.findById(student);
+
+  if (!isStudentExists) {
+    throw new appError(400, "This student does not exists");
+  }
+
+  // check is this faculty take this course
+  const facultyId = await FacultyModelSchema.findOne(
+    { id: faculty },
+    { _id: 1 },
+  );
+  const isFacultyBelongToCourse = await EnrolledCourseModel.findOne({
+    semesterRegistration,
+    offeredCourse,
+    student,
+    faculty: facultyId,
+  });
+  if (!isFacultyBelongToCourse) {
+    throw new appError(400, "Its not your course");
+  }
+
+  // Now dynamically update course marks------------------->
+  const modifiedData: Record<string, unknown> = { ...courseMarks };
+
+  if (courseMarks && Object.keys(courseMarks).length) {
+    for (const [keys, value] of Object.entries(courseMarks)) {
+      modifiedData[`courseMarks.${keys}`] = value;
+    }
+  }
+  const result = await EnrolledCourseModel.findByIdAndUpdate(
+    isFacultyBelongToCourse._id,
+    { $set: modifiedData },
+    { new: true },
+  );
+  return result;
+  // ------------------------------------------------------//
 };
