@@ -3,6 +3,7 @@ import { StudentModelSchema } from "./students.model";
 import { appError } from "../../error/custom.appError";
 import { userModelSchema } from "../user/user.model";
 import { TStudent } from "./students.interface";
+import { handleQuery } from "../../utils/handleQuery";
 
 // get all students------------------------------------->
 export const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
@@ -28,77 +29,8 @@ export const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
     "localGuardians.address",
   ];
 
-  // সার্চ টার্ম সেটআপ করা----------------------------->
-  //ata partial search
-  let searchTerm = "";
-  if (query?.searchTerm) {
-    searchTerm = query.searchTerm as string;
-  }
-
-  // সার্চ কন্ডিশন তৈরি করা----------------------------->
-  const searchQuery = searchAbleField.map((field) => ({
-    [field]: { $regex: searchTerm, $options: "i" },
-  }));
-  // --------------------------------------->
-
-  // create sort method--------------------->
-  const sortBy = query.sortBy ? (query.sortBy as string) : "id";
-  const sortOrder = query.sortOrder === "desc" ? -1 : 1;
-  // http://localhost:5000/api/v1/students/get-all-students-data?sortBy=id&sortOrder=desc   //you have use this to sort
-
-  // set limit & pagination------------------------------>
-  const limit = query.limit ? parseInt(query.limit as string, 10) : 10;
-  // pagination------------------------------------------>
-  const page = query.page ? parseInt(query.page as string, 10) : 1;
-  const skip = (page - 1) * limit;
-
-  // field limiting-------------------------------------->
-  const fields = query.fields
-    ? (query.fields as string).replace(/,/g, " ")
-    : " ";
-
-  // query filtering------------------------>
-  const queryObj = { ...query };
-  const excludeFields = [
-    "searchTerm",
-    "sortBy",
-    "sortOrder",
-    "limit",
-    "page",
-    "fields",
-  ];
-  excludeFields.forEach((el) => delete queryObj[el]);
-  // --------------------------------------->
-
-  // **(১) মোট রেজাল্ট সংখ্যা বের করা**
-  const totalResult = await StudentModelSchema.countDocuments({
-    $and: [{ $or: searchQuery }, queryObj],
-  });
-  // **মূল ডেটা রিটার্ন করা**
-
-  const result = await StudentModelSchema.find({
-    $and: [{ $or: searchQuery }, queryObj],
-  })
-    .select(fields)
-    .sort({ [sortBy]: sortOrder })
-    .skip(skip)
-    .limit(limit)
-    .populate("admissionSemester");
-
-  // **(২) মেটা ডেটা তৈরি করা**
-  const totalPages = Math.ceil(totalResult / limit);
-
-  // **(৩) রেসপন্স স্ট্রাকচার পরিবর্তন**
-
-  return {
-    meta: {
-      page,
-      limit,
-      totalResult,
-      totalPages,
-    },
-    data: result,
-  };
+  // handleQuery ফাংশন ব্যবহার
+  return await handleQuery(StudentModelSchema, query, searchAbleField);
 };
 
 // get a single student data---------------------------->

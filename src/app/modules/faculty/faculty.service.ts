@@ -3,11 +3,15 @@ import { TFaculty } from "./faculty.interface";
 import { FacultyModelSchema } from "./faculty.model";
 import { appError } from "../../error/custom.appError";
 import { userModelSchema } from "../user/user.model";
+import { handleQuery } from "../../utils/handleQuery";
 
 // get faculty------------------>
-export const getAllFacultyIntoDB = async () => {
-  const result = await FacultyModelSchema.find();
-  return result;
+export const getAllFacultyIntoDB = async (
+  query: Record<string, unknown> = {},
+) => {
+  // Log the query for debugging
+  const searchAbleField = ["gender"];
+  return await handleQuery(FacultyModelSchema, query, searchAbleField);
 };
 
 // get a single faculty------------------>
