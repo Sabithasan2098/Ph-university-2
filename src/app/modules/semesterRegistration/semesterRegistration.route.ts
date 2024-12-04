@@ -10,12 +10,14 @@ import {
   getSingleSemesterRegistration,
   updateSingleSemesterRegistration,
 } from "./semesterRegistration.controller";
+import { auth } from "../../middleware/authMiddleware";
 
 const router = express.Router();
 
-// create course------------------------------->
+// create semester------------------------------->
 router.post(
   "/create-semesterRegistration",
+  auth("student", "superAdmin"),
   validateRequest(semesterRegistrationValidationZodOnCreate),
   createSemesterRegistration,
 );
@@ -26,21 +28,11 @@ router.get("/get-all-semesterRegistration-data", getAllSemesterRegister);
 // get a course data--------------------------------->
 router.get("/:id", getSingleSemesterRegistration);
 
-// // delete a course data--------------------------------->
-// router.delete("/:id", delete);
-
 // update a semesterRegistration data--------------------------------->
 router.patch(
   "/:id",
   validateRequest(updateSemesterRegistrationValidationZodOnCreate),
   updateSingleSemesterRegistration,
 );
-
-// //
-// router.put(
-//   "/:courseId/faculties",
-//   validateRequest(courseFacultyValidation),
-//   assignFaculties,
-// );
 
 export const semesterRegistrationRoutes = router;

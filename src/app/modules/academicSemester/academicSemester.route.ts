@@ -24,15 +24,24 @@ router.post(
 );
 
 // get all semester data--------------------------------->
-router.get("/get-all-semester-data", getAllAcademicSemesterData);
+router.get(
+  "/get-all-semester-data",
+  auth("student", "admin", "faculty", "superAdmin"),
+  getAllAcademicSemesterData,
+);
 
 // get a semester data--------------------------------->
-router.get("/:semesterId", getASingleAcademicSemesterData);
+router.get(
+  "/:semesterId",
+  auth("student", "admin", "faculty", "superAdmin"),
+  getASingleAcademicSemesterData,
+);
 
 // update a semester data--------------------------------->
 router.patch(
   "/:semesterId",
   validateRequest(updateAcademicSemesterValidationSchema),
+  auth("admin", "superAdmin"),
   updateAcademicSemester,
 );
 

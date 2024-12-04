@@ -21,7 +21,7 @@ const router = express.Router();
 // create course------------------------------->
 router.post(
   "/create-course",
-  auth("admin"),
+  auth("admin", "superAdmin"),
   validateRequest(validationCourseZodOnCreate),
   createCourse,
 );
@@ -29,20 +29,24 @@ router.post(
 // get all course data--------------------------------->
 router.get(
   "/get-all-course-data",
-  auth("admin", "faculty", "student"),
+  auth("admin", "faculty", "student", "superAdmin"),
   getAllCourse,
 );
 
 // get a course data--------------------------------->
-router.get("/:id", getSingleCourse);
+router.get(
+  "/:id",
+  auth("admin", "faculty", "student", "superAdmin"),
+  getSingleCourse,
+);
 
 // delete a course data--------------------------------->
-router.delete("/:id", deleteCourse);
+router.delete("/:id", auth("admin", "superAdmin"), deleteCourse);
 
 // update a course data--------------------------------->
 router.patch(
   "/:id",
-  auth("admin"),
+  auth("admin", "superAdmin"),
   validateRequest(validationCourseZodOnUpdate),
   updateCourse,
 );
@@ -50,6 +54,7 @@ router.patch(
 // add faculties into course--------------------------->
 router.put(
   "/:courseId/faculties",
+  auth("admin", "superAdmin"),
   validateRequest(courseFacultyValidation),
   assignFaculties,
 );
@@ -57,7 +62,7 @@ router.put(
 // remove faculties into course--------------------------->
 router.delete(
   "/:courseId/remove-faculties",
-  auth("admin"),
+  auth("admin", "superAdmin"),
   validateRequest(courseFacultyValidation),
   removeFaculties,
 );
