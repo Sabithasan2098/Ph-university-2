@@ -57,12 +57,12 @@ router.post(
 );
 
 // get your own data------------------->
-router.get("/me", auth("admin", "student", "faculty"), getMe);
+router.get("/me", auth("admin", "student", "faculty", "superAdmin"), getMe);
 
 // change user status------------------->
 router.patch(
   "/change-user-status/:id",
-  auth("admin"),
+  auth("admin", "superAdmin"),
   validateRequest(changeStatusValidation),
   changeUserStatus,
 );

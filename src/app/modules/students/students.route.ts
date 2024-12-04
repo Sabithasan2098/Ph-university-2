@@ -12,20 +12,25 @@ import { auth } from "../../middleware/authMiddleware";
 const router = express.Router();
 
 // get all students data--------------------------------->
-router.get("/get-all-students-data", getAllStudents);
+router.get(
+  "/get-all-students-data",
+  auth("admin", "superAdmin"),
+  getAllStudents,
+);
 
 // get a students data--------------------------------->
-router.get("/:studentId", auth("admin"), getAStudent);
+router.get("/:studentId", auth("admin", "superAdmin"), getAStudent);
 
 // update a students data--------------------------------->
 router.patch(
   "/:studentId",
+  auth("admin", "superAdmin"),
   validateRequest(studentValidationSchemaZodOnUpdate),
   updateAStudent,
 );
 
 // delete student data--------------------------------->
 // actually we don't delete data just update a field
-router.delete("/:studentId", deleteAStudent);
+router.delete("/:studentId", auth("admin", "superAdmin"), deleteAStudent);
 
 export const studentsRoutes = router;
