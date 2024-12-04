@@ -1,12 +1,27 @@
 import express from "express";
 import { validateRequest } from "../../middleware/validateRequest";
-import { academicSemesterValidationSchema, updateAcademicSemesterValidationSchema } from "./academicSemesterValidation";
-import { createAcademicSemester, getAllAcademicSemesterData, getASingleAcademicSemesterData, updateAcademicSemester } from "./academicSemester,controller";
+import {
+  academicSemesterValidationSchema,
+  updateAcademicSemesterValidationSchema,
+} from "./academicSemesterValidation";
+import {
+  createAcademicSemester,
+  getAllAcademicSemesterData,
+  getASingleAcademicSemesterData,
+  updateAcademicSemester,
+} from "./academicSemester,controller";
+import { auth } from "../../middleware/authMiddleware";
+import { USER_ROLE } from "../user/user.constant";
 
 const router = express.Router();
 
 // create academicSemester------------------------------->
-router.post("/create-academicSemester",validateRequest(academicSemesterValidationSchema),createAcademicSemester)
+router.post(
+  "/create-academicSemester",
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  validateRequest(academicSemesterValidationSchema),
+  createAcademicSemester,
+);
 
 // get all semester data--------------------------------->
 router.get("/get-all-semester-data", getAllAcademicSemesterData);
@@ -15,6 +30,10 @@ router.get("/get-all-semester-data", getAllAcademicSemesterData);
 router.get("/:semesterId", getASingleAcademicSemesterData);
 
 // update a semester data--------------------------------->
-router.patch("/:semesterId", validateRequest(updateAcademicSemesterValidationSchema),updateAcademicSemester)
+router.patch(
+  "/:semesterId",
+  validateRequest(updateAcademicSemesterValidationSchema),
+  updateAcademicSemester,
+);
 
 export const academicSemesterRoutes = router;

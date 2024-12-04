@@ -83,6 +83,7 @@ const adminSchema = new Schema<TAdmin>(
     },
     profileImg: {
       type: String,
+      default: "",
     },
 
     isDeleted: {

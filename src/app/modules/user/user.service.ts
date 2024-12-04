@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from "mongoose";
 import config from "../../config";
 import { academicSemesterModel } from "../academicSemester/academicSemester.model";
@@ -23,7 +24,6 @@ import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 export const createStudentIntoDB = async (
   password: string,
   payload: TStudent,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ImgFile: any,
 ) => {
   // create a user obj
@@ -41,6 +41,17 @@ export const createStudentIntoDB = async (
     payload.admissionSemester,
   );
 
+  // find academic department info
+  const academicDepartment = await academicDepartmentModel.findById(
+    payload.academicDepartment,
+  );
+
+  if (!academicDepartment) {
+    throw new appError(400, "Academic department not found");
+  }
+  // set academicFaculty into payload
+  payload.academicFaculty = academicDepartment.academicFaculty;
+
   const session = await mongoose.startSession(); /*create session*/
 
   try {
@@ -52,10 +63,14 @@ export const createStudentIntoDB = async (
       throw new Error("Create admissionSemester first");
     }
     // send image to cloudinary------------------->
-    const imageName = `${userData.id}${payload?.name?.firstName}`;
-    const path = ImgFile.path;
-    const profileImg = await sendImageToCloudinary(imageName, path);
-    const { secure_url } = profileImg;
+    // image is optional
+    if (ImgFile) {
+      const imageName = `${userData.id}${payload?.name?.firstName}`;
+      const path = ImgFile.path;
+      const profileImg = await sendImageToCloudinary(imageName, path);
+      const { secure_url } = profileImg;
+      payload.profilePicture = secure_url;
+    }
     // --------------------------------------------//
     // create a user (transaction-1)
     console.log({ userData });
@@ -70,7 +85,6 @@ export const createStudentIntoDB = async (
     // add id and _id
     payload.id = newUser[0].id; //embedding id
     payload.user = newUser[0]._id; //referencing id
-    payload.profilePicture = secure_url;
 
     // create student transaction-2
 
@@ -79,18 +93,17 @@ export const createStudentIntoDB = async (
     }); /*session phathano*/ /*transaction ert jonno [ ] er babohar kora hoice*/
 
     if (!newStudent.length) {
-      throw new appError(400, "Failed to create user");
+      throw new appError(400, "Failed to create student");
     }
 
     // of this transaction
     await session.commitTransaction(); /*successful hole commit kora*/
     await session.endSession(); /*session send kora*/
     return newStudent;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+  } catch (error: any) {
     await session.abortTransaction(); /*faield hole transaction off kora*/
     await session.endSession(); /*session send kora*/
-    throw new appError(400, "User not create");
+    throw new Error(error);
   }
 };
 
@@ -98,6 +111,7 @@ export const createStudentIntoDB = async (
 export const createFacultyIntoDB = async (
   password: string,
   payload: TFaculty,
+  ImgFile: any,
 ) => {
   // create a user object
   const userData: Partial<TUser> = {};
@@ -125,6 +139,17 @@ export const createFacultyIntoDB = async (
     //set  generated id
     userData.id = await generatedFacultyId();
 
+    // send image to cloudinary------------------->
+    // image is optional
+    if (ImgFile) {
+      const imageName = `${userData.id}${payload?.name?.firstName}`;
+      const path = ImgFile.path;
+      const profileImg = await sendImageToCloudinary(imageName, path);
+      const { secure_url } = profileImg;
+      payload.profileImg = secure_url;
+    }
+    // --------------------------------------------//
+
     // create a user (transaction-1)
     const newUser = await userModelSchema.create([userData], { session }); // array
 
@@ -148,7 +173,6 @@ export const createFacultyIntoDB = async (
     await session.endSession();
 
     return newFaculty;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     await session.abortTransaction();
     await session.endSession();
@@ -157,7 +181,11 @@ export const createFacultyIntoDB = async (
 };
 
 // create-admin-with-user-------------------------------->
-export const createAdminIntoDB = async (password: string, payload: TAdmin) => {
+export const createAdminIntoDB = async (
+  password: string,
+  payload: TAdmin,
+  ImgFile: any,
+) => {
   // create a admin object
   const userData: Partial<TUser> = {};
   // if password does not given from client site give a default password
@@ -171,6 +199,17 @@ export const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   try {
     session.startTransaction();
     userData.id = await generatedAdminId();
+
+    // send image to cloudinary------------------->
+    // image is optional
+    if (ImgFile) {
+      const imageName = `${userData.id}${payload?.name?.firstName}`;
+      const path = ImgFile.path;
+      const profileImg = await sendImageToCloudinary(imageName, path);
+      const { secure_url } = profileImg;
+      payload.profileImg = secure_url;
+    }
+    // --------------------------------------------//
 
     // create a user(transaction-1)
     const newUser = await userModelSchema.create([userData], { session });
@@ -190,8 +229,6 @@ export const createAdminIntoDB = async (password: string, payload: TAdmin) => {
     await session.commitTransaction();
     await session.endSession();
     return newAdmin;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     await session.abortTransaction();
     await session.endSession();

@@ -10,12 +10,15 @@ import {
   getAllAcademicDepartment,
   updateAcademicDepartment,
 } from "./academicDepartment.controller";
+import { USER_ROLE } from "../user/user.constant";
+import { auth } from "../../middleware/authMiddleware";
 
 const router = express.Router();
 
 // create academicSemester------------------------------->
 router.post(
   "/create-academicDepartment",
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   validateRequest(academicDepartmentValidation),
   createAcademicDepartment,
 );

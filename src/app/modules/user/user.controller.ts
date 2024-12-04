@@ -18,13 +18,13 @@ export const createStudent = catchAsync(async (req) => {
 // create-faculty------------------------>
 export const createFaculty = catchAsync(async (req) => {
   const { password, faculty: facultyData } = req.body;
-  return await createFacultyIntoDB(password, facultyData);
+  return await createFacultyIntoDB(password, facultyData, req.file);
 }, "Create faculty is successful");
 
 // create-admin--------------------------->
 export const createAdmin = catchAsync(async (req) => {
   const { password, admin: adminData } = req.body;
-  return await createAdminIntoDB(password, adminData);
+  return await createAdminIntoDB(password, adminData, req.file);
 }, "Create admin successfully");
 
 // get-me--------------------------------->
