@@ -193,6 +193,17 @@ export const assignFacultiesInCourseIntoDB = async (
   return result;
 };
 
+// get assign faculties into course----------------------->
+export const getAssignFacultiesInCourseIntoDB = async (id: string) => {
+  const result = await CourseFacultyModel.findOne({ course: id })
+    .populate("faculties")
+    .populate("course");
+  if (!result) {
+    throw new appError(400, "Invalid course id");
+  }
+  return result;
+};
+
 // remove faculties into course----------------------->
 export const removeFacultiesInCourseIntoDB = async (
   id: string,

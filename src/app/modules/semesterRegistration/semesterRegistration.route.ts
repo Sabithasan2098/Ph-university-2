@@ -23,14 +23,23 @@ router.post(
 );
 
 // get all course data--------------------------------->
-router.get("/get-all-semesterRegistration-data", getAllSemesterRegister);
+router.get(
+  "/get-all-semesterRegistration-data",
+  auth("admin", "student", "faculty", "superAdmin"),
+  getAllSemesterRegister,
+);
 
 // get a course data--------------------------------->
-router.get("/:id", getSingleSemesterRegistration);
+router.get(
+  "/:id",
+  auth("admin", "student", "faculty", "superAdmin"),
+  getSingleSemesterRegistration,
+);
 
 // update a semesterRegistration data--------------------------------->
 router.patch(
   "/:id",
+  auth("admin", "superAdmin"),
   validateRequest(updateSemesterRegistrationValidationZodOnCreate),
   updateSingleSemesterRegistration,
 );

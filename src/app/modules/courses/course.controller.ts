@@ -4,6 +4,7 @@ import {
   createCourseIntoDB,
   deleteCourseIntoDB,
   getAllCourseIntoDB,
+  getAssignFacultiesInCourseIntoDB,
   getSingleCourseIntoDB,
   removeFacultiesInCourseIntoDB,
   updateCourseIntoDB,
@@ -44,6 +45,11 @@ export const assignFaculties = catchAsync(async (req) => {
   const { faculties } = req.body;
   return await assignFacultiesInCourseIntoDB(courseId, faculties);
 }, "Assign faculties successfully");
+// get assign faculties---------------------->
+export const getAssignFaculties = catchAsync(async (req) => {
+  const { courseId } = req.params;
+  return await getAssignFacultiesInCourseIntoDB(courseId);
+}, " Get assign faculties successfully");
 
 // remove faculties---------------------->
 export const removeFaculties = catchAsync(async (req) => {

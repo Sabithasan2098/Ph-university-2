@@ -10,6 +10,7 @@ import {
   createCourse,
   deleteCourse,
   getAllCourse,
+  getAssignFaculties,
   getSingleCourse,
   removeFaculties,
   updateCourse,
@@ -57,6 +58,12 @@ router.put(
   auth("admin", "superAdmin"),
   validateRequest(courseFacultyValidation),
   assignFaculties,
+);
+// get assign faculties------------------------------->
+router.get(
+  "/:courseId/get-faculties",
+  auth("admin", "superAdmin", "faculty", "student"),
+  getAssignFaculties,
 );
 
 // remove faculties into course--------------------------->
